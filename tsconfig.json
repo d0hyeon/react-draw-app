@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2016.Array.Include",
+      "ESNext"
+    ],
+    "allowJs": true,
+    "checkJs": true,
+    "alwaysStrict": true,
+    "baseUrl": ".",
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "locale": "ko",
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": false,
+    "noEmit": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "jsxImportSource": "@emotion/react"
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
