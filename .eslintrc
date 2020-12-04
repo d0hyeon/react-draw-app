@@ -34,7 +34,7 @@
         "ignoreRegExpLiterals": true
       }
     ],
-    "semi": ["error", "always"],
+    "semi": ["warn", "always"],
     "no-undef": "error",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
