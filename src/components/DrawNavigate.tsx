@@ -38,7 +38,7 @@ const DrawNavigate: React.FC<Props> = ({
                 ) : key.substr(0, 1)}
               </button>
             </li>
-          )
+          );
         })}
       </ul>
       <ColorSwitchWrapper>
@@ -56,8 +56,8 @@ const DrawNavigate: React.FC<Props> = ({
         />
       </ColorSwitchWrapper>
     </Navigate>
-  )
-}
+  );
+};
 
 
 const ColorSwitchWrapper = styled.div`
@@ -72,7 +72,7 @@ const ColorSwitchWrapper = styled.div`
       transform: translate(-5px, 5px);
     }
   }
-`
+`;
 
 const Navigate = styled.nav`
   position: absolute;
@@ -105,6 +105,6 @@ const Navigate = styled.nav`
       }
     }
   }
-`
+`;
 
 export default React.memo(DrawNavigate);

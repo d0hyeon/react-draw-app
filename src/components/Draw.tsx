@@ -21,10 +21,10 @@ const Draw: React.FC = () => {
 
   const onChangeTitle = React.useCallback((title) => {
     dispatch({type: 'setConfig', title});
-  }, [dispatch])
+  }, [dispatch]);
   
-  const canvas = React.useMemo(() => canvasRef.current, [canvasRef]);
-  const ctx = canvas?.getContext('2d') ?? null;
+  // const canvas = React.useMemo(() => canvasRef.current, [canvasRef]);
+  // const ctx = canvas?.getContext('2d') ?? null;
 
   return (
     <>
@@ -50,8 +50,8 @@ const Draw: React.FC = () => {
         </main>
       </Wrapper>
     </>
-  )
-}
+  );
+};
 
 const Header = styled.header`
   width: 100%;
@@ -70,7 +70,7 @@ const Header = styled.header`
       margin: 0;
     }
   }  
-`
+`;
 
 const Wrapper = styled.div`
   position: relative;
@@ -89,6 +89,6 @@ const Wrapper = styled.div`
       background-color: #fff;
     }
   }
-`
+`;
 
 export default Draw;

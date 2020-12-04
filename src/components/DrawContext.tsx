@@ -1,5 +1,5 @@
 import React, { Dispatch } from 'react';
-import { Config, Reducer } from 'src/types/common';
+import { Config } from 'src/types/common';
 
 type DrawContextValue = [Config, Dispatch<any>];
 
@@ -8,7 +8,7 @@ const INITIAL_STATE = {
   title: '',
   width: 0,
   height: 0
-}
+};
 
 
 export const drawReducer = (state, {type, ...payload}) => {
@@ -16,9 +16,9 @@ export const drawReducer = (state, {type, ...payload}) => {
     case 'setConfig': 
       const currentData = {...state, ...payload};
       localStorage.setItem('odnh-draw/config', JSON.stringify(currentData));
-      return currentData
+      return currentData;
   }
-}
+};
 
 
 const DrawContext = React.createContext<null | DrawContextValue>(null);
