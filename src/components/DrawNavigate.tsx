@@ -3,6 +3,7 @@ import { Tool } from '../types/tool';
 import { TOOL_CONFIG } from 'src/constants/tool';
 import styled from '@emotion/styled';
 import ColorButton from './common/ColorButton';
+import { HEADER_HEIGHT } from 'src/constants/layout';
 
 type Colors = [string, string];
 type SetColorCallback = (current: Colors) => Colors;
@@ -76,10 +77,11 @@ const ColorSwitchWrapper = styled.div`
 
 const Navigate = styled.nav`
   position: absolute;
-  background: #999;
+  background: #292c31;
   top:0;
-  height: 100%;
   left: 0;
+  height: 100%;
+  padding-top: ${HEADER_HEIGHT}px;
 
   ul {
     width: 100%;
