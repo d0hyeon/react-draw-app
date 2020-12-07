@@ -5,12 +5,11 @@
     "es2021": true,
     "node": true
   },
-  "globals": {
-    "jQuery": true,
-    "$": true,
-    "Kakao": true
-  },
-  "extends": ["plugin:react/recommended", "plugin:react-hooks/recommended"],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "prettier"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -19,7 +18,7 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["react", "@typescript-eslint"],
+  "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
     "max-len": [
       "error",

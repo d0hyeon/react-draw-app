@@ -1,12 +1,12 @@
-
 const {
   override,
   addBabelPreset,
-  addBabelPlugins
-} = require("customize-cra");
-
+  addBabelPlugins,
+  disableEsLint,
+} = require('customize-cra');
 
 module.exports = override(
-  addBabelPreset("@emotion/babel-preset-css-prop"), 
-  addBabelPlugins('@emotion')
-)
+  disableEsLint(),
+  addBabelPreset('@emotion/babel-preset-css-prop'),
+  addBabelPlugins('@emotion'),
+);
