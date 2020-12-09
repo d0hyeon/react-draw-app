@@ -1,21 +1,24 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+import { ToolComponentProps } from 'src/types/tool';
+import ToolContext from 'src/components/context/ToolContext';
 
-const BrashExecute = (canvasRef, config) => {
+const Brash: React.FC<ToolComponentProps> = ({ canvasRef, saveImage }) => {
   const [context, setContext] = React.useState<CanvasRenderingContext2D | null>(
     null,
   );
-  // const context = canvasRef.current?.getContext('2d');
+  const [toolState] = React.useContext(ToolContext);
+
   const onMouseDown = React.useCallback(
     (event: MouseEvent) => {
-      console.log(config.color);
       context.beginPath();
-      context.strokeStyle = config.color;
+      context.strokeStyle = toolState.color;
       context.lineWidth = 2.5;
       context.moveTo(event.offsetX, event.offsetY);
+      saveImage();
       canvasRef.current.addEventListener('mousemove', throttledOnMouseMove);
     },
-    [canvasRef, context, config.color],
+    [canvasRef, context, toolState.color],
   );
 
   const onMouseMove = React.useCallback(
@@ -38,21 +41,23 @@ const BrashExecute = (canvasRef, config) => {
     if (context === null) {
       setContext(canvasRef.current.getContext('2d'));
     } else {
-      canvasRef.current.addEventListener('mousedown', onMouseDown);
-      canvasRef.current.addEventListener('mouseup', onMouseUp);
-      canvasRef.current.addEventListener('mouseleave', onMouseUp);
+      canvasRef.current?.addEventListener('mousedown', onMouseDown);
+      canvasRef.current?.addEventListener('mouseup', onMouseUp);
+      canvasRef.current?.addEventListener('mouseleave', onMouseUp);
 
       return () => {
-        canvasRef.current.removeEventListener('mousedown', onMouseDown);
-        canvasRef.current.removeEventListener('mouseup', onMouseUp);
-        canvasRef.current.removeEventListener('mouseleave', onMouseUp);
+        canvasRef.current?.removeEventListener('mousedown', onMouseDown);
+        canvasRef.current?.removeEventListener('mouseup', onMouseUp);
+        canvasRef.current?.removeEventListener('mouseleave', onMouseUp);
       };
     }
-  }, [canvasRef, config.color, context]);
+  }, [canvasRef, toolState.color, context]);
+
+  return null;
 };
 
 export default {
   key: 'brash',
-  icon: 'https://www.flaticon.com/svg/static/icons/svg/2050/2050922.svg',
-  execute: BrashExecute,
+  icon: 'https://img.icons8.com/ios-filled/344/ffffff/marker-pen.png',
+  Component: React.memo(Brash),
 };
