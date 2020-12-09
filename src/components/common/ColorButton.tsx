@@ -4,49 +4,68 @@ import styled from '@emotion/styled';
 import useClickOuter from 'src/hooks/useClickOuter';
 
 interface Props {
+  className?: string;
   defaultColor?: string;
   color?: string;
   onChangeColor: (color: string) => void;
+  onClickButton?: () => void | boolean;
 }
 
 const ColorButton: React.FC<Props> = ({
+  className = '',
   color,
   defaultColor,
-  onChangeColor
+  onChangeColor,
+  onClickButton,
 }) => {
   const wrapperRef = React.useRef(null);
-  const currentColor = color || defaultColor || '#000';
+  const [currentColor, setCurrentColor] = React.useState(
+    color || defaultColor || '#000',
+  );
   const isClickedOuteSide = useClickOuter(wrapperRef);
-  const [isPickerDisplay, setIsPickerDisplay] = React.useState<boolean>(false);  
+  const [isPickerDisplay, setIsPickerDisplay] = React.useState<boolean>(false);
 
-  const onChangePicker = React.useCallback(({hex}) => {
-    onChangeColor(hex);
-  }, [onChangeColor]);  
+  const onChange = React.useCallback(
+    ({ hex }) => {
+      setCurrentColor(hex);
+    },
+    [setCurrentColor],
+  );
+  const onChangeComplete = React.useCallback(
+    ({ hex }) => {
+      onChangeColor(hex);
+    },
+    [onChangeColor],
+  );
+  const onClickColorChip = React.useCallback(() => {
+    if (onClickButton && onClickButton() === false) {
+      return;
+    }
+    setIsPickerDisplay((curr) => !curr);
+  }, [onClickButton]);
 
   React.useEffect(() => {
-    if(isClickedOuteSide) {
+    if (isClickedOuteSide) {
       setIsPickerDisplay(false);
     }
-  }, [isClickedOuteSide]);
+  }, [isClickedOuteSide, currentColor, onChangeColor]);
   return (
-    <Wrapper ref={wrapperRef}>
-      <StyledColorButton 
-        color={currentColor} 
-        onClick={() => setIsPickerDisplay(curr => !curr)}
-      >
+    <Wrapper ref={wrapperRef} className={className}>
+      <StyledColorButton color={currentColor} onClick={onClickColorChip}>
         {currentColor}
       </StyledColorButton>
       {isPickerDisplay && (
         <div className="layer">
           <SketchPicker
             color={currentColor}
-            onChange={onChangePicker}
+            onChange={onChange}
+            onChangeComplete={onChangeComplete}
           />
         </div>
       )}
     </Wrapper>
-  )
-}
+  );
+};
 
 export default React.memo(ColorButton);
 
@@ -58,13 +77,13 @@ const Wrapper = styled.div`
     top: 100%;
     z-index: 1;
   }
-`
+`;
 
 const StyledColorButton = styled.button<Pick<Props, 'color'>>`
   position: relative;
   width: 20px;
   height: 20px;
   border: 1px solid #ddd;
-  background: ${({color}) => color};
+  background: ${({ color }) => color};
   font-size: 0;
 `;
