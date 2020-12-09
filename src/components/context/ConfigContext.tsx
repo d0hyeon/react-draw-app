@@ -20,7 +20,7 @@ export const configReducer = (state, { type, ...payload }) => {
 };
 
 const ConfigContext = React.createContext<null | ConfigContextValue>(null);
-export const DrawProvider = ({ children }) => {
+export const ConfigProvider = ({ children }) => {
   const configContextValue = React.useReducer(
     configReducer,
     storageConfig ? JSON.parse(storageConfig) : INITIAL_STATE,
