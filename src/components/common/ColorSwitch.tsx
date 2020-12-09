@@ -1,38 +1,41 @@
 import React from 'react';
 import styled from '@emotion/styled';
 
-import ToolContext from '../context/ToolContext';
 import ColorButton from './ColorButton';
+import { Colors } from 'src/types/tool';
 
-const ColorSwitch = () => {
-  const [{ colors, color: activeColor }, dispatch] = React.useContext(
-    ToolContext,
-  );
+interface Props {
+  colors: Colors;
+  onChangeColors: (activeColor: string, colors: Colors) => void;
+}
 
-  const onChangeColorFunc = React.useCallback(
-    (idx) => (color) => {
-      dispatch({
-        type: idx === 0 ? 'setMainColor' : 'setSubColor',
-        payload: color,
-      });
+const ColorSwitch: React.FC<Props> = ({ colors: _colors, onChangeColors }) => {
+  const [activeIdx, setActiveIdx] = React.useState(0);
+  const [colors, setColors] = React.useState(_colors);
+
+  const onChangeColor = React.useCallback(
+    (color, idx) => {
+      setColors(idx === 0 ? [color, colors[1]] : [colors[1], color]);
     },
-    [],
+    [colors, onChangeColors],
   );
+
+  React.useEffect(() => {
+    onChangeColors(colors[activeIdx], colors);
+  }, [colors, activeIdx]);
 
   return (
     <ColorSwitchWrapper>
       {colors.map((color, idx) => (
         <ColorButton
-          className={activeColor === color ? 'front' : ''}
+          className={activeIdx === idx ? 'front' : ''}
           key={idx}
           color={color}
-          onChangeColor={onChangeColorFunc(idx)}
+          onChangeColor={(color) => onChangeColor(color, idx)}
           onClickButton={() => {
-            if (activeColor !== color) {
-              dispatch({
-                type: 'toggleActiveColor',
-                payload: idx,
-              });
+            if (activeIdx !== idx) {
+              setActiveIdx(idx);
+              return false;
             }
           }}
         />
