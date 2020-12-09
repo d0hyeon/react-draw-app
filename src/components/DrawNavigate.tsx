@@ -64,6 +64,10 @@ const Navigate = styled.nav`
         padding: 10px;
       }
 
+      img {
+        width: 100%;
+      }
+
       &.active button {
         background: rgba(255, 255, 255, 0.3);
       }
