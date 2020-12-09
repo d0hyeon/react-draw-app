@@ -1,10 +1,10 @@
+import { GlobalTools } from './../components/context/ToolContext';
 export type Tool = {
-  isColor: boolean;
   icon?: string;
+  execute?: (
+    canvasRef: { current: HTMLCanvasElement },
+    toolState: GlobalTools,
+  ) => void;
 };
 
-export type ToolLiteral = 'pen';
-export type Tools = {
-  [key: string]: Tool;
-};
 export type Colors = [string, string];

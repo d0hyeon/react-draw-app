@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tool } from '../types/tool';
-import { TOOL_CONFIG } from 'src/constants/tool';
+import { toolConfigs } from 'src/common/tools';
 import styled from '@emotion/styled';
 import { HEADER_HEIGHT } from 'src/constants/layout';
 import ToolContext from './context/ToolContext';
@@ -12,7 +12,7 @@ const DrawNavigate: React.FC = () => {
   return (
     <Navigate>
       <ul>
-        {Object.entries(TOOL_CONFIG).map(([key, value]) => {
+        {Object.entries(toolConfigs).map(([key, value]) => {
           const isActive = key === tools.tool;
 
           return (
