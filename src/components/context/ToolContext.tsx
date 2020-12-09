@@ -1,5 +1,5 @@
 import React, { Dispatch } from 'react';
-import { toolConfigs, ToolKeys } from 'src/common/tools';
+import { ToolKeys } from 'src/common/tools';
 import { Colors } from 'src/types/tool';
 
 export interface GlobalTools {
@@ -11,7 +11,7 @@ export interface GlobalTools {
 type ToolContextValue = [GlobalTools, Dispatch<any>];
 const INITIAL_STATE = {
   colors: ['#000', '#fff'],
-  tool: Object.keys(toolConfigs)[0],
+  tool: 'brash',
   color: '#000',
 };
 
