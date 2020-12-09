@@ -17,32 +17,10 @@ const INITIAL_STATE = {
 
 export const toolReducer = (state, { type, payload }) => {
   switch (type) {
-    case 'toggleActiveColor':
+    case 'patchTools':
       return {
         ...state,
-        color: state.colors[payload ? 1 : 0],
-      };
-    case 'setColors':
-      return {
-        ...state,
-        colors: payload,
-      };
-    case 'setMainColor':
-      return {
-        ...state,
-        color: payload,
-        colors: [payload, state.colors[1]],
-      };
-    case 'setSubColor':
-      return {
-        ...state,
-        colors: [state.colors[0], payload],
-      };
-    case 'reverseColors':
-      return {
-        ...state,
-        color: state.colors[1],
-        colors: [state.colors[1], state.colors[0]],
+        ...payload,
       };
     case 'setTool':
       return {
