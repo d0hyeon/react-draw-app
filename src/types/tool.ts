@@ -1,10 +1,12 @@
-import { GlobalTools } from './../components/context/ToolContext';
+import { ComponentType } from 'react';
+
+export interface ToolComponentProps {
+  canvasRef: { current: HTMLCanvasElement | null };
+  saveImage: Function;
+}
 export type Tool = {
   icon?: string;
-  execute?: (
-    canvasRef: { current: HTMLCanvasElement },
-    toolState: GlobalTools,
-  ) => void;
+  Component?: ComponentType<ToolComponentProps>;
 };
 
 export type Colors = [string, string];
