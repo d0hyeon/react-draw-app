@@ -1,17 +1,17 @@
 import React, { Dispatch } from 'react';
-import { Colors, ToolLiteral } from 'src/types/tool';
+import { toolConfigs, ToolKeys } from 'src/common/tools';
+import { Colors } from 'src/types/tool';
 
-interface GlobalTools {
+export interface GlobalTools {
   color: string;
   colors: Colors;
-  tool: ToolLiteral;
+  tool: ToolKeys;
 }
 
 type ToolContextValue = [GlobalTools, Dispatch<any>];
-
 const INITIAL_STATE = {
   colors: ['#000', '#fff'],
-  tool: 'pen',
+  tool: Object.keys(toolConfigs)[0],
   color: '#000',
 };
 
@@ -55,9 +55,7 @@ export const toolReducer = (state, { type, payload }) => {
 const ToolContext = React.createContext<null | ToolContextValue>(null);
 export const ToolProvider = ({ children }) => {
   const toolContextValue = React.useReducer(toolReducer, INITIAL_STATE);
-  React.useEffect(() => {
-    console.log(toolContextValue[0].color);
-  }, [toolContextValue[0]]);
+
   return (
     <ToolContext.Provider value={toolContextValue}>
       {children}
