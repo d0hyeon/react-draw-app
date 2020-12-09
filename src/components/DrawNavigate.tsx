@@ -8,6 +8,15 @@ import ColorSwitch from './common/ColorSwitch';
 
 const DrawNavigate: React.FC = () => {
   const [tools, dispatch] = React.useContext(ToolContext);
+  const onChangeColor = React.useCallback((activeColor, colors) => {
+    dispatch({
+      type: 'patchTools',
+      payload: {
+        color: activeColor,
+        colors,
+      },
+    });
+  }, []);
 
   return (
     <Navigate>
@@ -32,7 +41,7 @@ const DrawNavigate: React.FC = () => {
           );
         })}
       </ul>
-      <ColorSwitch />
+      <ColorSwitch colors={tools.colors} onChangeColors={onChangeColor} />
     </Navigate>
   );
 };
