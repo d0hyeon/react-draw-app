@@ -1,7 +1,7 @@
 import React from 'react';
 import { v4 } from 'uuid';
 import ToolContext from './context/ToolContext';
-import { toolConfigs } from 'src/common/tools';
+import { toolConfigs } from 'src/constants/tools';
 import { useHistoryState } from 'src/hooks/useHistoryState';
 
 interface Props {

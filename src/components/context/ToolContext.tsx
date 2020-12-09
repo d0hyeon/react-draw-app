@@ -1,5 +1,5 @@
 import React, { Dispatch } from 'react';
-import { ToolKeys } from 'src/common/tools';
+import { ToolKeys } from 'src/constants/tools';
 import { Colors } from 'src/types/tool';
 
 export interface GlobalTools {

@@ -56,8 +56,8 @@ const Brash: React.FC<ToolComponentProps> = ({ canvasRef, saveImage }) => {
   return null;
 };
 
-export default {
-  key: 'brash',
-  icon: 'https://img.icons8.com/ios-filled/344/ffffff/marker-pen.png',
-  Component: React.memo(Brash),
-};
+export const key = 'brash';
+export const icon =
+  'https://img.icons8.com/ios-filled/344/ffffff/marker-pen.png';
+
+export default React.memo(Brash);

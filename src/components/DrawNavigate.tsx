@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tool } from '../types/tool';
-import { toolConfigs } from 'src/common/tools';
+import { toolConfigs } from 'src/constants/tools';
 import styled from '@emotion/styled';
 import { HEADER_HEIGHT } from 'src/constants/layout';
 import ToolContext from './context/ToolContext';
