@@ -5,17 +5,10 @@ import ConfigContext from './context/ConfigContext';
 import ToggleInput from './common/ToggleInput';
 import { HEADER_HEIGHT } from 'src/constants/layout';
 import Canvas from './Canvas';
+import { ToolProvider } from './context/ToolContext';
 
 const Draw: React.FC = () => {
-  const [state, dispatch] = React.useContext(ConfigContext);
-  const [tool, setTool] = React.useState('pen');
-  const [[mainColor, subColor], setColors] = React.useState(['#000', '#fff']);
-
-  const canvasRef = React.useRef(null);
-
-  const onChangeTool = React.useCallback((tool) => {
-    setTool(tool);
-  }, []);
+  const [config, dispatch] = React.useContext(ConfigContext);
 
   const onChangeTitle = React.useCallback(
     (title) => {
@@ -28,25 +21,19 @@ const Draw: React.FC = () => {
     <>
       <Header>
         <h1>
-          <ToggleInput defaultValue={state.title} updateValue={onChangeTitle} />
+          <ToggleInput
+            defaultValue={config.title}
+            updateValue={onChangeTitle}
+          />
         </h1>
       </Header>
       <Wrapper>
-        <DrawNavigate
-          currentTool={tool}
-          colors={[mainColor, subColor]}
-          setColors={setColors}
-          onClickTool={onChangeTool}
-        />
-        <main>
-          <Canvas
-            ref={canvasRef}
-            width={state.width}
-            height={state.height}
-            tool={tool}
-            color={mainColor}
-          />
-        </main>
+        <ToolProvider>
+          <DrawNavigate />
+          <main>
+            <Canvas defaultWidth={config.width} defaultHeight={config.height} />
+          </main>
+        </ToolProvider>
       </Wrapper>
     </>
   );

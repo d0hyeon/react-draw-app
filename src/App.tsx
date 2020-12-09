@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Draw from './components/Draw';
-import ConfigContext from './components/context/ConfigContext';
-import withConfigProvider from './hoc/withConfigProvider';
+import ConfigContext, {
+  ConfigProvider,
+} from './components/context/ConfigContext';
+import withContextProvider from './hoc/withContextProvider';
 import ConfigForm from './components/common/ConfigForm';
 
 function App() {
@@ -34,4 +36,4 @@ const FormPanel = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-export default withConfigProvider(App);
+export default withContextProvider(App, ConfigProvider);
