@@ -1,16 +1,15 @@
 import React from 'react';
-import { Tool } from '../types/tool';
+import { Tool } from '../../types/tool';
 import { toolConfigs } from 'src/constants/tools';
 import styled from '@emotion/styled';
-import { HEADER_HEIGHT } from 'src/constants/layout';
-import ToolContext from './context/ToolContext';
-import ColorSwitch from './common/ColorSwitch';
+import ToolContext from 'src/components/context/ToolContext';
+import ColorSwitch from 'src/components/common/ColorSwitch';
 
-const DrawNavigate: React.FC = () => {
+const ToolSide: React.FC = () => {
   const [tools, dispatch] = React.useContext(ToolContext);
   const onChangeColor = React.useCallback((activeColor, colors) => {
     dispatch({
-      type: 'patchTools',
+      type: 'patchToolStates',
       payload: {
         color: activeColor,
         colors,
@@ -19,7 +18,7 @@ const DrawNavigate: React.FC = () => {
   }, []);
 
   return (
-    <Navigate>
+    <Side>
       <ul>
         {Object.entries(toolConfigs).map(([key, value]) => {
           const isActive = key === tools.tool;
@@ -28,7 +27,7 @@ const DrawNavigate: React.FC = () => {
             <li
               key={key}
               className={isActive && 'active'}
-              onClick={() => dispatch({ type: 'setTool', payload: key })}
+              onClick={() => dispatch({ type: 'setCurrentTool', payload: key })}
             >
               <button>
                 {(value as Tool)?.icon ? (
@@ -42,17 +41,16 @@ const DrawNavigate: React.FC = () => {
         })}
       </ul>
       <ColorSwitch colors={tools.colors} onChangeColors={onChangeColor} />
-    </Navigate>
+    </Side>
   );
 };
 
-const Navigate = styled.nav`
+const Side = styled.aside`
   position: absolute;
   background: #292c31;
   top: 0;
   left: 0;
   height: 100%;
-  padding-top: ${HEADER_HEIGHT}px;
 
   ul {
     width: 100%;
@@ -84,4 +82,4 @@ const Navigate = styled.nav`
   }
 `;
 
-export default DrawNavigate;
+export default ToolSide;
