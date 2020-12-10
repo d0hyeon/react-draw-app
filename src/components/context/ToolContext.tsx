@@ -6,6 +6,7 @@ export interface GlobalTools {
   color: string;
   colors: Colors;
   tool: ToolKeys;
+  lineWidth: number;
 }
 
 type ToolContextValue = [GlobalTools, Dispatch<any>];
@@ -13,16 +14,17 @@ const INITIAL_STATE = {
   colors: ['#000', '#fff'],
   tool: 'brash',
   color: '#000',
+  lineWidth: 3,
 };
 
 export const toolReducer = (state, { type, payload }) => {
   switch (type) {
-    case 'patchTools':
+    case 'patchToolStates':
       return {
         ...state,
         ...payload,
       };
-    case 'setTool':
+    case 'setCurrentTool':
       return {
         ...state,
         tool: payload,
