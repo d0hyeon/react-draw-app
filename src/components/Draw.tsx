@@ -76,7 +76,6 @@ const WrapperDiv = styled.div`
   width: 100vw;
   height: 100vh;
   padding-top: ${HEADER_HEIGHT}px;
-  background-color: #222;
   flex-direction: column;
 
   > nav {
@@ -91,6 +90,7 @@ const WrapperDiv = styled.div`
   main {
     height: 100%;
     padding: 30px 0;
+    background-color: #222;
     display: flex;
     justify-content: center;
     align-items: center;
