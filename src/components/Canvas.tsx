@@ -3,6 +3,7 @@ import { v4 } from 'uuid';
 import ToolContext from './context/ToolContext';
 import { toolConfigs } from 'src/constants/tools';
 import { useHistoryState } from 'src/hooks/useHistoryState';
+import useKeyPress from 'src/hooks/useKeyPress';
 
 interface Props {
   defaultWidth: number;
@@ -15,7 +16,6 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
   const id = v4();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const curreutTool = toolConfigs[toolState.tool];
-  const body = React.useMemo(() => document.body, []);
   const [[width, height]] = React.useState<[number, number]>([
     defaultWidth,
     defaultHeight,
@@ -24,7 +24,7 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
   const [
     _,
     setImage,
-    { histories, historyPush, historyPop },
+    { historyPush, historyPop },
   ] = useHistoryState<ImageData>();
 
   const imageSave = React.useCallback(() => {
@@ -34,36 +34,22 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
     setImage(image);
   }, [historyPush, defaultHeight, defaultWidth]);
 
-  React.useLayoutEffect(() => {
-    let keyCodeStack = [];
-    const onKeyDown = (event: KeyboardEvent) => {
-      keyCodeStack = Array.from(new Set([...keyCodeStack, event.code]));
-    };
+  const pressingKeyCodes = useKeyPress();
 
-    const onKeyUp = (event: KeyboardEvent) => {
-      const keyCode = event.code;
-      if (
-        keyCodeStack.includes('ControlLeft') &&
-        keyCodeStack.includes('KeyZ')
-      ) {
-        const prevImage = historyPop();
-        if (prevImage) {
-          canvasRef.current
-            .getContext('2d')
-            .putImageData(prevImage, 0, 0, 0, 0, width, height);
-        }
+  React.useEffect(() => {
+    if (
+      pressingKeyCodes.includes('ControlLeft') &&
+      pressingKeyCodes.includes('KeyZ')
+    ) {
+      const prevImage = historyPop();
+
+      if (prevImage) {
+        canvasRef.current
+          .getContext('2d')
+          .putImageData(prevImage, 0, 0, 0, 0, width, height);
       }
-      keyCodeStack = keyCodeStack.filter((code) => code !== keyCode);
-    };
-
-    body.addEventListener('keydown', onKeyDown);
-    body.addEventListener('keyup', onKeyUp);
-
-    return () => {
-      body.removeEventListener('keydown', onKeyDown);
-      body.removeEventListener('keyup', onKeyUp);
-    };
-  }, [histories, width, height]);
+    }
+  }, [pressingKeyCodes, historyPop]);
 
   return (
     <>
