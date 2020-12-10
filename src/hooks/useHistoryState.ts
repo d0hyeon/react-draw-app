@@ -18,36 +18,47 @@ export const useHistoryState = <T>(
 
   const historyPush = React.useCallback((value) => {
     historyRef.current = Array.from(new Set([...historyRef.current, value]));
+    setState(value);
   }, []);
 
   const historyPop = React.useCallback(() => {
     if (historyRef.current.length > 0) {
-      setState(historyRef.current[historyRef.current.length - 1]);
-      return historyRef.current.pop();
+      const value = historyRef.current.pop();
+      setState(value);
+      return value;
     }
     return null;
   }, []);
-  const historyDelete = React.useCallback((value: T) => {
-    historyRef.current = historyRef.current.filter((item) => item !== value);
-  }, []);
+  const historyDelete = React.useCallback(
+    (value: T) => {
+      const deletedHistories = historyRef.current.filter(
+        (item) => item !== value,
+      );
+      historyRef.current = deletedHistories;
+      setState(deletedHistories[deletedHistories.length - 1]);
+    },
+    [state],
+  );
   const setStateCallback = React.useCallback(
     (nextValue) => {
       const value =
         typeof nextValue === 'function' ? nextValue(state) : nextValue;
-      setState(nextValue);
+
       historyPush(value);
     },
     [state],
   );
 
-  return [
-    state,
-    setStateCallback,
-    {
-      histories: historyRef.current,
-      historyPush,
-      historyPop,
-      historyDelete,
-    },
-  ];
+  return React.useMemo(() => {
+    return [
+      state,
+      setStateCallback,
+      {
+        histories: historyRef.current,
+        historyPush,
+        historyPop,
+        historyDelete,
+      },
+    ];
+  }, [state]);
 };
