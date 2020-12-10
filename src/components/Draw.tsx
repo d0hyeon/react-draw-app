@@ -1,11 +1,12 @@
 import React from 'react';
-import DrawNavigate from './DrawNavigate';
+import ToolSide from './layout/ToolSide';
 import styled from '@emotion/styled';
 import ConfigContext from './context/ConfigContext';
 import ToggleInput from './common/ToggleInput';
 import { HEADER_HEIGHT } from 'src/constants/layout';
 import Canvas from './Canvas';
 import { ToolProvider } from './context/ToolContext';
+import ToolNavigate from './layout/ToolNavigate';
 
 const Draw: React.FC = () => {
   const [config, dispatch] = React.useContext(ConfigContext);
@@ -27,14 +28,20 @@ const Draw: React.FC = () => {
           />
         </h1>
       </Header>
-      <Wrapper>
-        <ToolProvider>
-          <DrawNavigate />
-          <main>
-            <Canvas defaultWidth={config.width} defaultHeight={config.height} />
-          </main>
-        </ToolProvider>
-      </Wrapper>
+      <ToolProvider>
+        <WrapperDiv>
+          <ToolNavigate />
+          <div className="layout">
+            <ToolSide />
+            <main>
+              <Canvas
+                defaultWidth={config.width}
+                defaultHeight={config.height}
+              />
+            </main>
+          </div>
+        </WrapperDiv>
+      </ToolProvider>
     </>
   );
 };
@@ -63,16 +70,27 @@ const Header = styled.header`
   }
 `;
 
-const Wrapper = styled.div`
+const WrapperDiv = styled.div`
   position: relative;
+  display: flex;
   width: 100vw;
   height: 100vh;
+  padding-top: ${HEADER_HEIGHT}px;
   background-color: #222;
+  flex-direction: column;
+
+  > nav {
+    flex: 0 0 auto;
+  }
+
+  > .layout {
+    position: relative;
+    flex: 1 0 auto;
+  }
 
   main {
     height: 100%;
     padding: 30px 0;
-    padding-top: ${HEADER_HEIGHT}px;
     display: flex;
     justify-content: center;
     align-items: center;

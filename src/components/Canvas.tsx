@@ -24,7 +24,7 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
   const [
     _,
     setImage,
-    { history, historyPush, historyPop },
+    { histories, historyPush, historyPop },
   ] = useHistoryState<ImageData>();
 
   const imageSave = React.useCallback(() => {
@@ -63,7 +63,7 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
       body.removeEventListener('keydown', onKeyDown);
       body.removeEventListener('keyup', onKeyUp);
     };
-  }, [history, width, height]);
+  }, [histories, width, height]);
 
   return (
     <>
@@ -73,7 +73,11 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
         width={width}
         height={height}
       />
-      <curreutTool.Component canvasRef={canvasRef} saveImage={imageSave} />
+      <curreutTool.Component
+        canvasRef={canvasRef}
+        saveImage={imageSave}
+        {...(curreutTool.props ?? {})}
+      />
     </>
   );
 };

@@ -3,22 +3,28 @@ import throttle from 'lodash/throttle';
 import { ToolComponentProps } from 'src/types/tool';
 import ToolContext from 'src/components/context/ToolContext';
 
-const Brash: React.FC<ToolComponentProps> = ({ canvasRef, saveImage }) => {
-  const [context, setContext] = React.useState<CanvasRenderingContext2D | null>(
-    null,
-  );
+const DEFAULT_CONTEXT_PROPERTIES = {
+  globalCompositeOperation: 'source-over',
+};
+
+const Brash: React.FC<ToolComponentProps> = ({
+  canvasRef,
+  saveImage,
+  ...props
+}) => {
+  const context = canvasRef.current?.getContext?.('2d') || null;
   const [toolState] = React.useContext(ToolContext);
 
   const onMouseDown = React.useCallback(
     (event: MouseEvent) => {
       context.beginPath();
       context.strokeStyle = toolState.color;
-      context.lineWidth = 2.5;
+      context.lineWidth = toolState.lineWidth;
       context.moveTo(event.offsetX, event.offsetY);
       saveImage();
       canvasRef.current.addEventListener('mousemove', throttledOnMouseMove);
     },
-    [canvasRef, context, toolState.color],
+    [canvasRef, context, toolState.color, toolState.lineWidth],
   );
 
   const onMouseMove = React.useCallback(
@@ -37,10 +43,20 @@ const Brash: React.FC<ToolComponentProps> = ({ canvasRef, saveImage }) => {
     canvasRef.current.removeEventListener('mousemove', throttledOnMouseMove);
   }, [canvasRef, context]);
 
+  React.useEffect(() => {
+    if (context) {
+      const configContextProperties = {
+        ...DEFAULT_CONTEXT_PROPERTIES,
+        ...(props ?? {}),
+      };
+      Object.entries(configContextProperties).forEach(([key, value]) => {
+        context[key] = value;
+      });
+    }
+  }, [context, props]);
+
   React.useLayoutEffect(() => {
-    if (context === null) {
-      setContext(canvasRef.current.getContext('2d'));
-    } else {
+    if (context) {
       canvasRef.current?.addEventListener('mousedown', onMouseDown);
       canvasRef.current?.addEventListener('mouseup', onMouseUp);
       canvasRef.current?.addEventListener('mouseleave', onMouseUp);
@@ -51,7 +67,7 @@ const Brash: React.FC<ToolComponentProps> = ({ canvasRef, saveImage }) => {
         canvasRef.current?.removeEventListener('mouseleave', onMouseUp);
       };
     }
-  }, [canvasRef, toolState.color, context]);
+  }, [canvasRef, props, toolState, context]);
 
   return null;
 };
