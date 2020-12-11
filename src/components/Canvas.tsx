@@ -23,33 +23,56 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
 
   const [
     _,
-    setImage,
-    { historyPush, historyPop },
+    setDeletedImage,
+    { pop: deletedImagePop },
+  ] = useHistoryState<ImageData>();
+  const [
+    __,
+    setPrevImage,
+    { pop: prevImagesPop },
   ] = useHistoryState<ImageData>();
 
   const imageSave = React.useCallback(() => {
     const image = canvasRef.current
       .getContext('2d')
-      .getImageData(0, 0, defaultWidth, defaultHeight);
-    setImage(image);
-  }, [historyPush, defaultHeight, defaultWidth]);
+      .getImageData(0, 0, width, height);
+
+    setPrevImage(image);
+  }, [height, width]);
 
   const pressingKeyCodes = useKeyPress();
+
+  const prev = React.useCallback(() => {
+    const context = canvasRef.current.getContext('2d');
+    const prevImage = prevImagesPop();
+
+    if (prevImage) {
+      setDeletedImage(context.getImageData(0, 0, width, height));
+      context.putImageData(prevImage, 0, 0, 0, 0, width, height);
+    }
+  }, [width, height]);
+
+  const next = React.useCallback(() => {
+    const context = canvasRef.current.getContext('2d');
+    const deletedImage = deletedImagePop();
+    if (deletedImage) {
+      setPrevImage(context.getImageData(0, 0, width, height));
+      context.putImageData(deletedImage, 0, 0, 0, 0, width, height);
+    }
+  }, [width, height]);
 
   React.useEffect(() => {
     if (
       pressingKeyCodes.includes('ControlLeft') &&
       pressingKeyCodes.includes('KeyZ')
     ) {
-      const prevImage = historyPop();
-
-      if (prevImage) {
-        canvasRef.current
-          .getContext('2d')
-          .putImageData(prevImage, 0, 0, 0, 0, width, height);
+      if (pressingKeyCodes.includes('ShiftLeft')) {
+        next();
+      } else {
+        prev();
       }
     }
-  }, [pressingKeyCodes, historyPop]);
+  }, [pressingKeyCodes]);
 
   return (
     <>
