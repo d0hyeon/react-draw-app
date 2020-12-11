@@ -6,6 +6,7 @@ import { StrokeEvent } from 'src/types/common';
 
 const DEFAULT_CONTEXT_PROPERTIES = {
   globalCompositeOperation: 'source-over',
+  lineCap: 'round',
 };
 
 declare global {
