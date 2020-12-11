@@ -12,11 +12,7 @@ declare global {
   interface CanvasRenderingContext2D extends StrokeEvent {}
 }
 
-const Brash: React.FC<ToolComponentProps> = ({
-  canvasRef,
-  saveImage,
-  ...props
-}) => {
+const Brash: React.FC<ToolComponentProps> = ({ canvasRef, ...props }) => {
   const context = canvasRef.current?.getContext?.('2d') || null;
   const [toolState] = React.useContext(ToolContext);
 
@@ -27,7 +23,13 @@ const Brash: React.FC<ToolComponentProps> = ({
       context.lineWidth = toolState.lineWidth;
       context.moveTo(offsetX, offsetY);
 
-      saveImage();
+      const contextEvent = new CustomEvent<CanvasRenderingContext2D>(
+        'contextChange',
+        {
+          detail: context,
+        },
+      );
+      canvasRef.current.dispatchEvent(contextEvent);
       canvasRef.current.addEventListener('mousemove', throttledOnMouseMove);
     },
     [canvasRef, context, toolState.color, toolState.lineWidth],

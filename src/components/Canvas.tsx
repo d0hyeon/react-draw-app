@@ -4,7 +4,6 @@ import ToolContext from './context/ToolContext';
 import { toolConfigs } from 'src/constants/tools';
 import { useHistoryState } from 'src/hooks/useHistoryState';
 import useKeyPress from 'src/hooks/useKeyPress';
-import { StrokeEvent } from 'src/types/common';
 
 interface Props {
   defaultWidth: number;
@@ -32,14 +31,6 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
     setPrevImage,
     { pop: prevImagesPop },
   ] = useHistoryState<ImageData>();
-
-  const imageSave = React.useCallback(() => {
-    const image = canvasRef.current
-      .getContext('2d')
-      .getImageData(0, 0, width, height);
-
-    setPrevImage(image);
-  }, [height, width]);
 
   const pressingKeyCodes = useKeyPress();
 
@@ -75,14 +66,23 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
     }
   }, [pressingKeyCodes]);
 
+  const onContextChange = React.useCallback(
+    ({ detail: context }: CustomEvent<CanvasRenderingContext2D>) => {
+      const image = context.getImageData(0, 0, width, height);
+      setPrevImage(image);
+    },
+    [height, width],
+  );
+
   React.useLayoutEffect(() => {
-    canvasRef.current.addEventListener(
-      'strokeChange',
-      ({ detail }: CustomEvent<StrokeEvent>) => {
-        console.log(detail);
-      },
-    );
-  }, [canvasRef]);
+    // canvasRef.current.addEventListener('contextChange', ()_)
+    const canvas = canvasRef.current;
+    canvas.addEventListener('contextChange', onContextChange);
+
+    return () => {
+      canvas.removeEventListener('contextChange', onContextChange);
+    };
+  }, [canvasRef, height, width]);
 
   return (
     <>
@@ -94,7 +94,6 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
       />
       <curreutTool.Component
         canvasRef={canvasRef}
-        saveImage={imageSave}
         {...(curreutTool.props ?? {})}
       />
     </>
