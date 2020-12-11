@@ -17,3 +17,10 @@ export interface StrokeEvent {
   strokeWidth: number;
   strokeHeight: number;
 }
+
+/************
+ * @TODO StrokeEvent
+ * [[x,y], [x,y], [x,y], [x,y]]
+ * or
+ * [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
+ */
