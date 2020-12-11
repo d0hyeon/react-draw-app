@@ -2,10 +2,15 @@ import React from 'react';
 import throttle from 'lodash/throttle';
 import { ToolComponentProps } from 'src/types/tool';
 import ToolContext from 'src/components/context/ToolContext';
+import { StrokeEvent } from 'src/types/common';
 
 const DEFAULT_CONTEXT_PROPERTIES = {
   globalCompositeOperation: 'source-over',
 };
+
+declare global {
+  interface CanvasRenderingContext2D extends StrokeEvent {}
+}
 
 const Brash: React.FC<ToolComponentProps> = ({
   canvasRef,
@@ -16,11 +21,12 @@ const Brash: React.FC<ToolComponentProps> = ({
   const [toolState] = React.useContext(ToolContext);
 
   const onMouseDown = React.useCallback(
-    (event: MouseEvent) => {
+    ({ offsetX, offsetY }) => {
       context.beginPath();
       context.strokeStyle = toolState.color;
       context.lineWidth = toolState.lineWidth;
-      context.moveTo(event.offsetX, event.offsetY);
+      context.moveTo(offsetX, offsetY);
+
       saveImage();
       canvasRef.current.addEventListener('mousemove', throttledOnMouseMove);
     },
@@ -28,8 +34,40 @@ const Brash: React.FC<ToolComponentProps> = ({
   );
 
   const onMouseMove = React.useCallback(
-    (event: MouseEvent) => {
-      context.lineTo(event.offsetX, event.offsetY);
+    ({ offsetX, offsetY }) => {
+      const {
+        strokeX = 0,
+        strokeY = 0,
+        strokeWidth = 0,
+        strokeHeight = 0,
+      } = context;
+      let changeCnt = 0;
+      if (strokeWidth <= offsetX - strokeX) {
+        context.strokeWidth = offsetX - strokeX;
+        changeCnt++;
+      }
+      if (strokeHeight <= offsetY - strokeY) {
+        context.strokeHeight = offsetY - strokeY;
+        changeCnt++;
+      }
+      if (strokeX >= offsetX || strokeX === 0) {
+        context.strokeX = offsetX;
+        changeCnt++;
+      }
+      if (strokeY >= offsetY || strokeY === 0) {
+        context.strokeY = offsetY;
+        changeCnt++;
+      }
+
+      if (changeCnt > 0) {
+        const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
+          detail: context,
+        });
+
+        canvasRef.current.dispatchEvent(strokeEvent);
+      }
+
+      context.lineTo(offsetX, offsetY);
       context.stroke();
     },
     [canvasRef, context],
