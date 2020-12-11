@@ -7,7 +7,7 @@ const useKeyPress = <T = HTMLElement>(target?: Target<T>): string[] => {
   const [
     keyCode,
     setKeyCode,
-    { histories, historyDelete },
+    { histories, deleteItem },
   ] = useHistoryState<string>('');
 
   const onKeyDown = React.useCallback(
@@ -19,7 +19,7 @@ const useKeyPress = <T = HTMLElement>(target?: Target<T>): string[] => {
 
   const onKeyUp = React.useCallback(
     (event) => {
-      historyDelete(event.code);
+      deleteItem(event.code);
     },
     [histories],
   );
