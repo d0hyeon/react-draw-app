@@ -1,10 +1,10 @@
 import React from 'react';
+import uniq from 'lodash/uniq';
 
-interface UseHistoryMethods<T> {
+interface History<T> {
   histories: T[];
-  historyPush: (value: T) => void;
-  historyPop: () => T | null;
-  historyDelete: (value: T) => void;
+  pop: () => T | null;
+  deleteItem: (value: T) => void;
 }
 
 type SetStateCallback<T> = (state: T) => T;
@@ -12,19 +12,15 @@ type SetState<T> = (nextState: T | SetStateCallback<T>) => void;
 
 export const useHistoryState = <T>(
   initialState?: T,
-): [T, SetState<T>, UseHistoryMethods<T>] => {
-  const [state, setState] = React.useState<T>(() => initialState);
+): [T, SetState<T>, History<T>] => {
+  const [state, setState] = React.useState<T>(() => initialState || null);
   const historyRef = React.useRef<T[]>([]);
 
-  const historyPush = React.useCallback((value) => {
-    historyRef.current = Array.from(new Set([...historyRef.current, value]));
-    setState(value);
-  }, []);
-
   const historyPop = React.useCallback(() => {
-    if (historyRef.current.length > 0) {
+    const historyLength = historyRef.current.length;
+    if (historyLength > 0) {
       const value = historyRef.current.pop();
-      setState(value);
+      setState(historyRef.current[historyLength - 1]);
       return value;
     }
     return null;
@@ -44,7 +40,8 @@ export const useHistoryState = <T>(
       const value =
         typeof nextValue === 'function' ? nextValue(state) : nextValue;
 
-      historyPush(value);
+      historyRef.current = uniq([...historyRef.current, value]);
+      setState(value);
     },
     [state],
   );
@@ -55,9 +52,8 @@ export const useHistoryState = <T>(
       setStateCallback,
       {
         histories: historyRef.current,
-        historyPush,
-        historyPop,
-        historyDelete,
+        pop: historyPop,
+        deleteItem: historyDelete,
       },
     ];
   }, [state]);
