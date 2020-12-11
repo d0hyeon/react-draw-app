@@ -3,11 +3,17 @@ export interface Config {
   height: number;
   title: string;
 }
-  
 
 export type ActionPayload<P> = {
   type: string;
-  payload: P
-}
+  payload: P;
+};
 
 export type Reducer<S> = (state: S, payload: ActionPayload<S>) => S;
+
+export interface StrokeEvent {
+  strokeY: number;
+  strokeX: number;
+  strokeWidth: number;
+  strokeHeight: number;
+}

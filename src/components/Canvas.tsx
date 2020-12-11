@@ -4,6 +4,7 @@ import ToolContext from './context/ToolContext';
 import { toolConfigs } from 'src/constants/tools';
 import { useHistoryState } from 'src/hooks/useHistoryState';
 import useKeyPress from 'src/hooks/useKeyPress';
+import { StrokeEvent } from 'src/types/common';
 
 interface Props {
   defaultWidth: number;
@@ -73,6 +74,15 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
       }
     }
   }, [pressingKeyCodes]);
+
+  React.useLayoutEffect(() => {
+    canvasRef.current.addEventListener(
+      'strokeChange',
+      ({ detail }: CustomEvent<StrokeEvent>) => {
+        console.log(detail);
+      },
+    );
+  }, [canvasRef]);
 
   return (
     <>
