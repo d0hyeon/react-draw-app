@@ -1,21 +1,25 @@
 import React from 'react';
 import ToolSide from './layout/ToolSide';
 import styled from '@emotion/styled';
-import ConfigContext from './context/ConfigContext';
 import ToggleInput from './common/ToggleInput';
 import { HEADER_HEIGHT } from 'src/constants/layout';
 import Canvas from './Canvas';
 import { ToolProvider } from './context/ToolContext';
 import ToolNavigate from './layout/ToolNavigate';
+import { configSelector } from 'src/atoms/config';
+import { useRecoilState } from 'recoil';
 
 const Draw: React.FC = () => {
-  const [config, dispatch] = React.useContext(ConfigContext);
+  const [configState, setConfigState] = useRecoilState(configSelector);
 
   const onChangeTitle = React.useCallback(
     (title) => {
-      dispatch({ type: 'setConfig', title });
+      setConfigState((prev) => ({
+        ...prev,
+        title,
+      }));
     },
-    [dispatch],
+    [setConfigState],
   );
 
   return (
@@ -23,7 +27,7 @@ const Draw: React.FC = () => {
       <Header>
         <h1>
           <ToggleInput
-            defaultValue={config.title}
+            defaultValue={configState.title}
             updateValue={onChangeTitle}
           />
         </h1>
@@ -35,8 +39,8 @@ const Draw: React.FC = () => {
             <ToolSide />
             <main>
               <Canvas
-                defaultWidth={config.width}
-                defaultHeight={config.height}
+                defaultWidth={configState.width}
+                defaultHeight={configState.height}
               />
             </main>
           </div>

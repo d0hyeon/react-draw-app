@@ -1,20 +1,19 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Draw from './components/Draw';
-import ConfigContext, {
-  ConfigProvider,
-} from './components/context/ConfigContext';
 import withContextProvider from './hoc/withContextProvider';
 import ConfigForm from './components/common/ConfigForm';
+import { RecoilRoot, useRecoilState } from 'recoil';
+import { configSelector } from './atoms/config';
 
 function App() {
-  const [state, dispatch] = React.useContext(ConfigContext);
+  const [configState, setConfigState] = useRecoilState(configSelector);
 
-  const onSubmitCallback = (formData) => {
-    dispatch({ type: 'setConfig', ...formData });
-  };
+  const onSubmitCallback = React.useCallback((formData) => {
+    setConfigState(formData);
+  }, []);
 
-  const isInitalized = Object.values(state).every((value) => !!value);
+  const isInitalized = Object.values(configState).every((value) => !!value);
 
   return (
     <>
@@ -22,7 +21,7 @@ function App() {
         <Draw />
       ) : (
         <FormPanel>
-          <ConfigForm initialValue={state} onSuccess={onSubmitCallback} />
+          <ConfigForm initialValue={configState} onSuccess={onSubmitCallback} />
         </FormPanel>
       )}
     </>
@@ -36,4 +35,4 @@ const FormPanel = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-export default withContextProvider(App, ConfigProvider);
+export default withContextProvider(App, RecoilRoot);
