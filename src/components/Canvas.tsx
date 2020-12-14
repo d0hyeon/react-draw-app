@@ -2,8 +2,8 @@ import React from 'react';
 import { v4 } from 'uuid';
 import ToolContext from './context/ToolContext';
 import { toolConfigs } from 'src/constants/tools';
-import { useHistoryState } from 'src/hooks/useHistoryState';
-import useKeyPress from 'src/hooks/useKeyPress';
+import { useHistoryState } from '@odnh/use-history-state';
+import { useKeyPress } from '@odnh/use-keypress';
 
 interface Props {
   defaultWidth: number;
@@ -32,7 +32,8 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
     { pop: prevImagesPop },
   ] = useHistoryState<ImageData>();
 
-  const pressingKeyCodes = useKeyPress();
+  const pressingKeyCodes = useKeyPress('code');
+  console.log(pressingKeyCodes);
 
   const prev = React.useCallback(() => {
     const context = canvasRef.current.getContext('2d');
