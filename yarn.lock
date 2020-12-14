@@ -1636,6 +1636,21 @@
   dependencies:
     mkdirp "^1.0.4"
 
+"@odnh/use-history-state@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@odnh/use-history-state/-/use-history-state-0.0.3.tgz#e6e786ca74831e7320c5a51440f89568817d412f"
+  integrity sha512-vV+umC9aupcbi9b80S4A5bsCtQWuXf+qLLeWnLc6mZ+4Fx6FM5mQExTiu6MzswoJqeYTl4wc+qcru+p/N3k1bA==
+  dependencies:
+    react-is "^17.0.1"
+
+"@odnh/use-keypress@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@odnh/use-keypress/-/use-keypress-0.0.1.tgz#2ce52a21a4309f0ca348fe49b9ac008046b97692"
+  integrity sha512-vkDmc15+uzgSqJCn03/13jPT/rrmzTH58uQfjJ+DMoKnRT6+JbXP9q7wnxP04s2eXDF8LmYDCtaG9pB7iI6hmQ==
+  dependencies:
+    "@odnh/use-history-state" "^0.0.3"
+    react-is "^17.0.1"
+
 "@odnh/use-swipe@^0.1.3":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@odnh/use-swipe/-/use-swipe-0.1.3.tgz#49d99e706c109d9c5a893c7da456a95665cbd43a"
