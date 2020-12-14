@@ -1643,10 +1643,10 @@
   dependencies:
     react-is "^17.0.1"
 
-"@odnh/use-keypress@^0.0.1":
+"@odnh/use-key-press@^0.0.1":
   version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@odnh/use-keypress/-/use-keypress-0.0.1.tgz#2ce52a21a4309f0ca348fe49b9ac008046b97692"
-  integrity sha512-vkDmc15+uzgSqJCn03/13jPT/rrmzTH58uQfjJ+DMoKnRT6+JbXP9q7wnxP04s2eXDF8LmYDCtaG9pB7iI6hmQ==
+  resolved "https://registry.yarnpkg.com/@odnh/use-key-press/-/use-key-press-0.0.1.tgz#26cfd6fcc1950988ce023b1fc1d4d959fc1cad91"
+  integrity sha512-SyFRFivAZd1zowDpPctxOXGaBBjeXzfT8yLXzLi2O4y00sPlZAaTgPbztJjVahE1l9/M6BlO8oGCUuhU8HFpQQ==
   dependencies:
     "@odnh/use-history-state" "^0.0.3"
     react-is "^17.0.1"
