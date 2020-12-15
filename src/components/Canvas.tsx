@@ -1,19 +1,28 @@
 import React from 'react';
-import { v4 } from 'uuid';
-import ToolContext from './context/ToolContext';
+import styled from '@emotion/styled';
 import { toolConfigs } from 'src/constants/tools';
 import { useHistoryState } from '@odnh/use-history-state';
-import { useKeyPress } from '@odnh/use-keypress';
+import { useKeyPress } from '@odnh/use-key-press';
+import { useRecoilState } from 'recoil';
+import { tool } from 'src/atoms/tool';
+import { ID } from 'src/types/common';
+import { layerEntity } from 'src/atoms/layer';
 
 interface Props {
+  id: ID;
+  isCurrent: boolean;
   defaultWidth: number;
   defaultHeight: number;
 }
 
-const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
-  const [toolState] = React.useContext(ToolContext);
-
-  const id = v4();
+const Canvas: React.FC<Props> = ({
+  id,
+  isCurrent,
+  defaultWidth,
+  defaultHeight,
+}) => {
+  const [toolState] = useRecoilState(tool);
+  const [layerState, setLayerState] = useRecoilState(layerEntity(id));
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const curreutTool = toolConfigs[toolState.tool];
   const [[width, height]] = React.useState<[number, number]>([
@@ -33,7 +42,6 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
   ] = useHistoryState<ImageData>();
 
   const pressingKeyCodes = useKeyPress('code');
-  console.log(pressingKeyCodes);
 
   const prev = React.useCallback(() => {
     const context = canvasRef.current.getContext('2d');
@@ -55,6 +63,10 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
   }, [width, height]);
 
   React.useEffect(() => {
+    if (layerState.isLock) {
+      return;
+    }
+
     if (
       pressingKeyCodes.includes('ControlLeft') &&
       pressingKeyCodes.includes('KeyZ')
@@ -65,28 +77,47 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
         prev();
       }
     }
-  }, [pressingKeyCodes]);
+  }, [pressingKeyCodes, layerState]);
 
   const onContextChange = React.useCallback(
     ({ detail: context }: CustomEvent<CanvasRenderingContext2D>) => {
+      if (layerState.isLock) {
+        return;
+      }
       const image = context.getImageData(0, 0, width, height);
       setPrevImage(image);
     },
-    [height, width],
+    [height, width, layerState],
   );
 
   React.useLayoutEffect(() => {
     // canvasRef.current.addEventListener('contextChange', ()_)
-    const canvas = canvasRef.current;
-    canvas.addEventListener('contextChange', onContextChange);
+    if (!layerState.isLock) {
+      const canvas = canvasRef.current;
+      console.log(layerState.context.background);
+      if (layerState.context.background) {
+        const context = canvas.getContext('2d');
+        const currentFillStyle = context.fillStyle;
+        context.fillStyle = layerState.context.background;
+        context.fillRect(0, 0, width, height);
+        context.fillStyle = currentFillStyle;
+      }
+      canvas.addEventListener('contextChange', onContextChange);
+      return () => {
+        canvas.removeEventListener('contextChange', onContextChange);
+      };
+    }
+  }, [canvasRef, height, width, layerState]);
 
-    return () => {
-      canvas.removeEventListener('contextChange', onContextChange);
-    };
-  }, [canvasRef, height, width]);
+  React.useLayoutEffect(() => {
+    setLayerState((prev) => ({
+      ...prev,
+      canvas: canvasRef.current,
+    }));
+  }, [canvasRef.current]);
 
   return (
-    <>
+    <CanvasWrapper isCurrent={isCurrent}>
       <canvas
         id={`canvas${id}`}
         ref={canvasRef}
@@ -97,9 +128,18 @@ const Canvas: React.FC<Props> = ({ defaultWidth, defaultHeight }) => {
         canvasRef={canvasRef}
         {...(curreutTool.props ?? {})}
       />
-    </>
+    </CanvasWrapper>
   );
 };
+
+const CanvasWrapper = styled.div<Pick<Props, 'isCurrent'>>`
+  position: absolute;
+  ${({ isCurrent }) => isCurrent && 'z-index: 10000'};
+
+  canvas {
+    border: 1px solid #fff;
+  }
+`;
 
 Canvas.displayName = 'Canvas';
 export default React.memo(Canvas);

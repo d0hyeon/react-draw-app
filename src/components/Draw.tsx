@@ -1,16 +1,19 @@
 import React from 'react';
 import ToolSide from './layout/ToolSide';
 import styled from '@emotion/styled';
+import { css } from '@emotion/core';
 import ToggleInput from './common/ToggleInput';
 import { HEADER_HEIGHT } from 'src/constants/layout';
 import Canvas from './Canvas';
-import { ToolProvider } from './context/ToolContext';
 import ToolNavigate from './layout/ToolNavigate';
 import { configSelector } from 'src/atoms/config';
 import { useRecoilState } from 'recoil';
+import { layer } from 'src/atoms/layer';
+import LayerNavigate from './layout/LayerNavigate';
 
 const Draw: React.FC = () => {
   const [configState, setConfigState] = useRecoilState(configSelector);
+  const [{ currentLayerId, layers }] = useRecoilState(layer);
 
   const onChangeTitle = React.useCallback(
     (title) => {
@@ -32,20 +35,27 @@ const Draw: React.FC = () => {
           />
         </h1>
       </Header>
-      <ToolProvider>
-        <WrapperDiv>
-          <ToolNavigate />
-          <div className="layout">
-            <ToolSide />
-            <main>
+      <WrapperDiv>
+        <ToolNavigate />
+        <div className="layout">
+          <ToolSide />
+          <main>
+            {layers.map((layerId, idx) => (
               <Canvas
+                key={layerId}
+                id={layerId}
+                isCurrent={layerId === currentLayerId}
                 defaultWidth={configState.width}
                 defaultHeight={configState.height}
+                css={css`
+                  z-index: ${idx};
+                `}
               />
-            </main>
-          </div>
-        </WrapperDiv>
-      </ToolProvider>
+            ))}
+          </main>
+          <LayerNavigate />
+        </div>
+      </WrapperDiv>
     </>
   );
 };
@@ -100,8 +110,17 @@ const WrapperDiv = styled.div`
     align-items: center;
     overflow-y: auto;
 
-    canvas {
+    > .container {
+      position: relative;
       background-color: #fff;
+
+      canvas {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: transparent;
+      }
     }
   }
 `;
