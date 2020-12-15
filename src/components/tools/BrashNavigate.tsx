@@ -1,16 +1,16 @@
 import React from 'react';
-import ToolContext from '../context/ToolContext';
 import { css } from '@emotion/core';
 import { InputNumber } from 'antd';
+import { tool } from 'src/atoms/tool';
+import { useRecoilState } from 'recoil';
 
 const BrashNavigate = () => {
-  const [toolState, dispatch] = React.useContext(ToolContext);
-
+  const [toolState, setToolState] = useRecoilState(tool);
   const onChangeCallback = React.useCallback(
     (value) => {
-      dispatch({ type: 'patchToolStates', payload: { lineWidth: value } });
+      setToolState((prev) => ({ ...prev, lineWidth: value }));
     },
-    [dispatch],
+    [setToolState],
   );
 
   React.useEffect(() => {

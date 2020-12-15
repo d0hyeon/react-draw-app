@@ -2,32 +2,31 @@ import React from 'react';
 import { Tool } from '../../types/tool';
 import { toolConfigs } from 'src/constants/tools';
 import styled from '@emotion/styled';
-import ToolContext from 'src/components/context/ToolContext';
 import ColorSwitch from 'src/components/common/ColorSwitch';
+import { tool } from 'src/atoms/tool';
+import { useRecoilState } from 'recoil';
 
 const ToolSide: React.FC = () => {
-  const [tools, dispatch] = React.useContext(ToolContext);
+  const [toolState, setToolState] = useRecoilState(tool);
   const onChangeColor = React.useCallback((activeColor, colors) => {
-    dispatch({
-      type: 'patchToolStates',
-      payload: {
-        color: activeColor,
-        colors,
-      },
-    });
+    setToolState((prev) => ({
+      ...prev,
+      color: activeColor,
+      colors,
+    }));
   }, []);
 
   return (
     <Side>
       <ul>
         {Object.entries(toolConfigs).map(([key, value]) => {
-          const isActive = key === tools.tool;
+          const isActive = key === toolState.tool;
 
           return (
             <li
               key={key}
               className={isActive && 'active'}
-              onClick={() => dispatch({ type: 'setCurrentTool', payload: key })}
+              onClick={() => setToolState((prev) => ({ ...prev, tool: key }))}
             >
               <button>
                 {(value as Tool)?.icon ? (
@@ -40,7 +39,7 @@ const ToolSide: React.FC = () => {
           );
         })}
       </ul>
-      <ColorSwitch colors={tools.colors} onChangeColors={onChangeColor} />
+      <ColorSwitch colors={toolState.colors} onChangeColors={onChangeColor} />
     </Side>
   );
 };

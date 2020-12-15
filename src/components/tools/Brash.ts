@@ -1,8 +1,9 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
 import { ToolComponentProps } from 'src/types/tool';
-import ToolContext from 'src/components/context/ToolContext';
 import { StrokeEvent } from 'src/types/common';
+import { tool } from 'src/atoms/tool';
+import { useRecoilState } from 'recoil';
 
 const DEFAULT_CONTEXT_PROPERTIES = {
   globalCompositeOperation: 'source-over',
@@ -15,7 +16,7 @@ declare global {
 
 const Brash: React.FC<ToolComponentProps> = ({ canvasRef, ...props }) => {
   const context = canvasRef.current?.getContext?.('2d') || null;
-  const [toolState] = React.useContext(ToolContext);
+  const [toolState] = useRecoilState(tool);
 
   const onMouseDown = React.useCallback(
     ({ offsetX, offsetY }) => {
@@ -38,38 +39,28 @@ const Brash: React.FC<ToolComponentProps> = ({ canvasRef, ...props }) => {
 
   const onMouseMove = React.useCallback(
     ({ offsetX, offsetY }) => {
-      const {
-        strokeX = 0,
-        strokeY = 0,
-        strokeWidth = 0,
-        strokeHeight = 0,
-      } = context;
-      let changeCnt = 0;
-      if (strokeWidth <= offsetX - strokeX) {
-        context.strokeWidth = offsetX - strokeX;
-        changeCnt++;
+      let { strokeX = [0, 0], strokeY = [0, 0] } = context;
+
+      if (strokeX[0] === 0) {
+        strokeX[0] = offsetX;
       }
-      if (strokeHeight <= offsetY - strokeY) {
-        context.strokeHeight = offsetY - strokeY;
-        changeCnt++;
-      }
-      if (strokeX >= offsetX || strokeX === 0) {
-        context.strokeX = offsetX;
-        changeCnt++;
-      }
-      if (strokeY >= offsetY || strokeY === 0) {
-        context.strokeY = offsetY;
-        changeCnt++;
+      if (strokeY[0] === 0) {
+        strokeY[0] = offsetY;
       }
 
-      if (changeCnt > 0) {
-        const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
-          detail: context,
-        });
-
-        canvasRef.current.dispatchEvent(strokeEvent);
+      if (strokeX[0] > offsetX) {
+        strokeX[0] = offsetX;
+      } else if (strokeX[1] < offsetX) {
+        strokeX[1] = offsetX;
+      }
+      if (strokeY[0] > offsetY) {
+        strokeY[0] = offsetY;
+      } else if (strokeY[1] < offsetY) {
+        strokeY[1] = offsetY;
       }
 
+      context.strokeX = strokeX;
+      context.strokeY = strokeY;
       context.lineTo(offsetX, offsetY);
       context.stroke();
     },

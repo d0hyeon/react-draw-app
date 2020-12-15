@@ -1,10 +1,11 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import ToolContext from '../context/ToolContext';
 import { toolConfigs } from 'src/constants/tools';
+import { tool } from 'src/atoms/tool';
+import { useRecoilState } from 'recoil';
 
 const ToolNavigate = () => {
-  const [toolState] = React.useContext(ToolContext);
+  const [toolState] = useRecoilState(tool);
   const ToolComponent = toolConfigs?.[toolState.tool]?.Navigate;
 
   if (!ToolComponent) {
