@@ -1,4 +1,3 @@
-  
 import React from 'react';
 import { Input } from 'antd';
 
@@ -9,8 +8,10 @@ interface DoInputProps {
 
 const ToggleInput: React.FC<DoInputProps> = ({ updateValue, defaultValue }) => {
   const [isModify, setIsModify] = React.useState<boolean>(false);
-  const [inputValue, setInputValue] = React.useState<string>(defaultValue ?? '');
-  
+  const [inputValue, setInputValue] = React.useState<string>(
+    defaultValue ?? '',
+  );
+
   const inputRef = React.useRef(null);
 
   const toggleModify = React.useCallback(() => {
@@ -41,7 +42,7 @@ const ToggleInput: React.FC<DoInputProps> = ({ updateValue, defaultValue }) => {
         }
       }
     },
-    [inputValue]
+    [inputValue],
   );
 
   React.useEffect(() => {
@@ -60,7 +61,7 @@ const ToggleInput: React.FC<DoInputProps> = ({ updateValue, defaultValue }) => {
       required={true}
     />
   ) : (
-    <p onClick={toggleModify}>{defaultValue}</p>
+    <p onDoubleClick={toggleModify}>{defaultValue}</p>
   );
 };
 
