@@ -8,12 +8,31 @@ import Canvas from './Canvas';
 import ToolNavigate from './layout/ToolNavigate';
 import { configSelector } from 'src/atoms/config';
 import { useRecoilState } from 'recoil';
-import { layer } from 'src/atoms/layer';
+import { ContextState, layer, layerEntity } from 'src/atoms/layer';
 import LayerNavigate from './layout/LayerNavigate';
+import LasterCanvas from './LasterCanvas';
+import { ID } from 'src/types/common';
+import { useHistoryState } from '@odnh/use-history-state';
+import { useKeyPress } from '@odnh/use-key-press';
+
+type HistoryType = {
+  layerId: ID;
+  imageData?: ImageData;
+  contextState?: ContextState;
+};
 
 const Draw: React.FC = () => {
   const [configState, setConfigState] = useRecoilState(configSelector);
-  const [{ currentLayerId, layers }] = useRecoilState(layer);
+  const [{ currentLayerId, layers }, setLayer] = useRecoilState(layer);
+  const [layerState, setLayerState] = useRecoilState(layerEntity(currentLayerId));
+
+  const [willChangeLayerId, setWillChangeLayerId] = React.useState<null | ID>(null);
+  const [willChangeImage, setWillChangeImage] = React.useState<null | ImageData>(null);
+  const [willChangeContextState, setWillChangeContextState] = React.useState<null | ContextState>(null);
+
+  const [_, setPrevState, prevHistory] = useHistoryState<HistoryType>();
+  const [__, setNextState, nextHistory] = useHistoryState<HistoryType>();
+  const pressingKeyCodes = useKeyPress();
 
   const onChangeTitle = React.useCallback(
     (title) => {
@@ -25,14 +44,109 @@ const Draw: React.FC = () => {
     [setConfigState],
   );
 
+  const getCurrentStateToHistory = React.useCallback(() => {
+    return {
+      layerId: currentLayerId,
+      imageData: layerState.canvas.getContext('2d').getImageData(0, 0, configState.width, configState.height),
+      contextState: layerState.contextState,
+    };
+  }, [currentLayerId, layerState.canvas, layerState.contextState, configState.width, configState.height]);
+
+  const prev = React.useCallback(() => {
+    const state = prevHistory.pop();
+    if (state) {
+      setNextState(getCurrentStateToHistory());
+      setWillChangeLayerId(state.layerId);
+      setTimeout(() => {
+        if (state.imageData) setWillChangeImage(state.imageData);
+        if (state.contextState) setWillChangeContextState(state.contextState);
+      }, 0);
+    }
+  }, [getCurrentStateToHistory]);
+
+  const next = React.useCallback(() => {
+    const state = nextHistory.pop();
+
+    if (state) {
+      setPrevState(getCurrentStateToHistory());
+      setWillChangeLayerId(state.layerId);
+      setTimeout(() => {
+        if (state.imageData) setWillChangeImage(state.imageData);
+        if (state.contextState) setWillChangeContextState(state.contextState);
+      }, 0);
+    }
+  }, [getCurrentStateToHistory]);
+
+  React.useEffect(() => {
+    if (pressingKeyCodes.includes('ControlLeft') && pressingKeyCodes.includes('KeyZ')) {
+      if (pressingKeyCodes.includes('ShiftLeft')) {
+        next();
+      } else {
+        prev();
+      }
+    }
+  }, [pressingKeyCodes]);
+
+  React.useEffect(() => {
+    if (willChangeLayerId) {
+      setLayer((prev) => ({
+        ...prev,
+        currentLayerId: willChangeLayerId,
+      }));
+      setWillChangeLayerId(null);
+    }
+  }, [willChangeLayerId]);
+  React.useEffect(() => {
+    if (willChangeContextState) {
+      setLayerState((prev) => ({
+        ...prev,
+        contextState: {
+          ...prev.contextState,
+          ...willChangeContextState,
+        },
+      }));
+      setWillChangeContextState(null);
+    }
+  }, [willChangeContextState]);
+  React.useEffect(() => {
+    if (willChangeImage) {
+      const context = layerState.canvas.getContext('2d');
+      context.putImageData(willChangeImage, 0, 0, 0, 0, configState.width, configState.height);
+      setWillChangeImage(null);
+    }
+  }, [willChangeImage, layerState, configState.width, configState.height]);
+
+  const onContextChange = React.useCallback(
+    ({ detail: context }: CustomEvent<CanvasRenderingContext2D>) => {
+      if (layerState.isLock) {
+        return;
+      }
+
+      const image = context.getImageData(0, 0, configState.width, configState.height);
+      setPrevState({
+        layerId: currentLayerId,
+        imageData: image,
+        contextState: layerState.contextState,
+      });
+    },
+    [currentLayerId, configState.height, configState.width, layerState],
+  );
+
+  React.useLayoutEffect(() => {
+    if (!layerState.isLock) {
+      layerState.canvas?.addEventListener('contextChange', onContextChange);
+
+      return () => {
+        layerState.canvas?.removeEventListener('contextChange', onContextChange);
+      };
+    }
+  }, [onContextChange, layerState.canvas, layerState.isLock]);
+
   return (
     <>
       <Header>
         <h1>
-          <ToggleInput
-            defaultValue={configState.title}
-            updateValue={onChangeTitle}
-          />
+          <ToggleInput defaultValue={configState.title} updateValue={onChangeTitle} />
         </h1>
       </Header>
       <WrapperDiv>
@@ -40,6 +154,7 @@ const Draw: React.FC = () => {
         <div className="layout">
           <ToolSide />
           <main>
+            <LasterCanvas />
             {layers.map((layerId, idx) => (
               <Canvas
                 key={layerId}
@@ -47,11 +162,12 @@ const Draw: React.FC = () => {
                 isCurrent={layerId === currentLayerId}
                 defaultWidth={configState.width}
                 defaultHeight={configState.height}
-                css={css`
-                  z-index: ${idx};
+                customCss={css`
+                  z-index: ${layers.length - idx};
                 `}
               />
             ))}
+            <canvas className="background" width={`${configState.width}px`} height={`${configState.height}px`} />
           </main>
           <LayerNavigate />
         </div>
@@ -110,16 +226,16 @@ const WrapperDiv = styled.div`
     align-items: center;
     overflow-y: auto;
 
-    > .container {
-      position: relative;
-      background-color: #fff;
+    canvas {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-color: transparent;
 
-      canvas {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        background-color: transparent;
+      &.background {
+        background-image: url('https://pixlr.com/img/misc/square-bg.png');
+        z-index: 0;
       }
     }
   }
