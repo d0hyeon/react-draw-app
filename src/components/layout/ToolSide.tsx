@@ -25,16 +25,10 @@ const ToolSide: React.FC = () => {
           return (
             <li
               key={key}
-              className={isActive && 'active'}
+              className={isActive ? 'active' : ''}
               onClick={() => setToolState((prev) => ({ ...prev, tool: key }))}
             >
-              <button>
-                {(value as Tool)?.icon ? (
-                  <img src={value.icon} title={key} />
-                ) : (
-                  key.substr(0, 1)
-                )}
-              </button>
+              <button>{(value as Tool)?.icon ? <img src={value.icon} title={key} /> : key.substr(0, 1)}</button>
             </li>
           );
         })}

@@ -48,7 +48,7 @@ const ColorSwitchWrapper = styled.div`
   margin-top: 10px;
   > * {
     display: inline-block;
-    &:first-child {
+    &:first-of-type {
       transform: translate(5px, -5px);
     }
     &:last-child {

@@ -14,12 +14,7 @@ interface LayerItemProps {
   onSelect: (id: ID) => void;
 }
 
-const _LayerItem: React.FC<LayerItemProps> = ({
-  id,
-  isCurrent,
-  onDelete,
-  onSelect,
-}) => {
+const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelect }) => {
   const [layer, setLayer] = useRecoilState(layerEntity(id));
 
   const canvas = layer.canvas;
@@ -39,22 +34,13 @@ const _LayerItem: React.FC<LayerItemProps> = ({
     [imageSrc],
   );
   return (
-    <li
-      key={id}
-      className={`${isCurrent ? 'active' : ''}`}
-      onClick={() => onSelect(id)}
-    >
+    <li key={id} className={`${isCurrent ? 'active' : ''}`} onClick={() => onSelect(id)}>
       <figure>
         <div className="frame">
           <img src={imageSrc} title={layer.title} onError={onErrorImage} />
         </div>
         <figcaption>
-          <p>
-            <ToggleInput
-              defaultValue={layer.title}
-              updateValue={onChangeTitle}
-            />
-          </p>
+          <ToggleInput defaultValue={layer.title} updateValue={onChangeTitle} />
           <div>
             <button
               onClick={(e) => {
