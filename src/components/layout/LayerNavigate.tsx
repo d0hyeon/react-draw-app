@@ -91,9 +91,10 @@ const LayerNavigate = () => {
     [layers, currentLayerId],
   );
   const layerAddHandler = React.useCallback(() => {
+    const createLayerId = nanoid();
     setLayer((prev) => ({
-      ...prev,
-      layers: [nanoid(), ...prev.layers],
+      currentLayerId: createLayerId,
+      layers: [createLayerId, ...prev.layers],
     }));
   }, []);
 
