@@ -1,10 +1,11 @@
 import { ComponentType } from 'react';
+import { ID } from './common';
 
-interface CustomComponentProps extends Partial<CanvasRenderingContext2D> {
-  [key: string]: any;
+interface ExtendsComponentProps {
+  id: ID;
 }
 
-export interface ToolComponentProps extends CustomComponentProps {
+export interface ToolComponentProps extends ExtendsComponentProps {
   canvasRef: { current: HTMLCanvasElement | null };
 }
 
@@ -12,7 +13,7 @@ export type Tool = {
   icon?: string;
   Component: ComponentType<ToolComponentProps>;
   Navigate?: ComponentType;
-  props?: CustomComponentProps;
+  props?: Partial<CanvasRenderingContext2D>;
 };
 
 export type Colors = [string, string];
