@@ -129,7 +129,6 @@ export default LayerNavigate;
 
 const LayerWrapperNav = styled.aside`
   height: 100%;
-
   width: 300px;
   background-color: #292c31;
   display: flex;
@@ -215,7 +214,8 @@ const LayerListUl = styled.ul`
         width: 40px;
         margin-right: 5px;
         border: 1px solid #fff;
-        background-color: rgba(255, 255, 255, 0.4);
+        background-image: url('https://pixlr.com/img/misc/square-bg.png');
+        background-size: 80%;
       }
 
       figcaption {
