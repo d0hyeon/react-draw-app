@@ -8,15 +8,14 @@ import { SerializedStyles } from '@emotion/core';
 interface Props {
   id: ID;
   isCurrent: boolean;
-  defaultWidth: number;
-  defaultHeight: number;
+  width: number;
+  height: number;
   customCss?: SerializedStyles;
 }
 
-const Canvas: React.FC<Props> = ({ id, isCurrent, defaultWidth, defaultHeight, customCss }) => {
+const Canvas: React.FC<Props> = ({ id, isCurrent, width, height, customCss }) => {
   const [layerState, setLayerState] = useRecoilState(layerEntity(id));
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const [[width, height]] = React.useState<[number, number]>([defaultWidth, defaultHeight]);
 
   React.useLayoutEffect(() => {
     const canvas = layerState.canvas;
@@ -27,7 +26,7 @@ const Canvas: React.FC<Props> = ({ id, isCurrent, defaultWidth, defaultHeight, c
       context.fillRect(0, 0, width, height);
       context.fillStyle = defaultFillStyle;
     }
-  }, [layerState.contextState.background, layerState.canvas]);
+  }, [layerState.contextState.background, layerState.canvas, width, height]);
 
   React.useLayoutEffect(() => {
     setLayerState((prev) => ({
