@@ -1,11 +1,11 @@
 import React from 'react';
-import ToolSide from './layout/ToolSide';
+import ToolNavigate from './layout/ToolNavigate';
 import styled from '@emotion/styled';
 import { css } from '@emotion/core';
 import ToggleInput from './common/ToggleInput';
 import { HEADER_HEIGHT } from 'src/constants/layout';
 import Canvas from './Canvas';
-import ToolNavigate from './layout/ToolNavigate';
+import ToolOptionBar from './layout/ToolOptionBar';
 import { configSelector } from 'src/atoms/config';
 import { useRecoilState } from 'recoil';
 import { ContextState, layer, layerEntity } from 'src/atoms/layer';
@@ -150,9 +150,9 @@ const Draw: React.FC = () => {
         </h1>
       </Header>
       <WrapperDiv>
-        <ToolNavigate />
+        <ToolOptionBar />
         <div className="layout">
-          <ToolSide />
+          <ToolNavigate />
           <main>
             <LasterCanvas />
             {layers.map((layerId, idx) => (

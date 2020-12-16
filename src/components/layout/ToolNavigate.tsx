@@ -1,50 +1,78 @@
 import React from 'react';
-import styled from '@emotion/styled';
+import { Tool } from '../../types/tool';
 import { toolConfigs } from 'src/constants/tools';
+import styled from '@emotion/styled';
+import ColorSwitch from 'src/components/common/ColorSwitch';
 import { tool } from 'src/atoms/tool';
 import { useRecoilState } from 'recoil';
 
-const ToolNavigate = () => {
-  const [toolState] = useRecoilState(tool);
-  const ToolComponent = toolConfigs?.[toolState.tool]?.Navigate;
-
-  if (!ToolComponent) {
-    return null;
-  }
+const ToolSide: React.FC = () => {
+  const [toolState, setToolState] = useRecoilState(tool);
+  const onChangeColor = React.useCallback((activeColor, colors) => {
+    setToolState((prev) => ({
+      ...prev,
+      color: activeColor,
+      colors,
+    }));
+  }, []);
 
   return (
-    <Navigate>
-      <ToolComponent />
-    </Navigate>
+    <Side>
+      <ul>
+        {Object.entries(toolConfigs).map(([key, value]) => {
+          const isActive = key === toolState.tool;
+
+          return (
+            <li
+              key={key}
+              className={isActive ? 'active' : ''}
+              onClick={() => setToolState((prev) => ({ ...prev, tool: key }))}
+            >
+              <button>{(value as Tool)?.icon ? <img src={value.icon} title={key} /> : key.substr(0, 1)}</button>
+            </li>
+          );
+        })}
+      </ul>
+      <ColorSwitch colors={toolState.colors} onChangeColors={onChangeColor} />
+    </Side>
   );
 };
 
-export default ToolNavigate;
+const Side = styled.aside`
+  position: absolute;
+  background: #292c31;
+  top: 0;
+  left: 0;
+  height: 100%;
 
-const Navigate = styled.nav`
-  width: 100%;
-  height: 50px;
-  padding: 10px;
-  background-color: #25282c;
-  border-bottom: 1px solid #444;
+  ul {
+    width: 100%;
+    margin: 0;
 
-  * {
-    color: #999;
-    border-color: #999;
-    background-color: transparent;
-  }
+    li {
+      width: 50px;
+      height: 50px;
+      padding: 5px;
+      text-align: center;
+      line-height: 15px;
+      font-size: 11px;
+      cursor: pointer;
 
-  > ul,
-  > dl {
-    display: flex;
-    align-items: center;
-  }
-  dd {
-    margin: 0 0 0 10px;
-  }
+      button {
+        border-radius: 5px;
+        vertical-align: middle;
+        padding: 10px;
+      }
 
-  dl ~ dl,
-  li ~ li {
-    margin-left: 15px;
+      img {
+        width: 100%;
+      }
+
+      &.active button {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
   }
 `;
+
+export default ToolSide;
