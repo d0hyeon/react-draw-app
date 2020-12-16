@@ -174,8 +174,8 @@ const Draw: React.FC = () => {
                     key={layerId}
                     id={layerId}
                     isCurrent={layerId === currentLayerId}
-                    defaultWidth={configState.width}
-                    defaultHeight={configState.height}
+                    width={configState.width}
+                    height={configState.height}
                     customCss={css`
                       z-index: ${layers.length - idx};
                     `}
