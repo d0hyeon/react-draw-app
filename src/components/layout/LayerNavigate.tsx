@@ -129,20 +129,43 @@ export default LayerNavigate;
 
 const LayerWrapperNav = styled.aside`
   height: 100%;
+
   width: 300px;
   background-color: #292c31;
+  display: flex;
+  flex-direction: column;
 
   section {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    position: relative;
+    height: 100%;
+    padding: 30px 0;
     border-bottom: 1px solid #000;
 
     & ~ section {
       border-top: 1px solid #000;
     }
-    header {
+
+    .body {
+      overflow-y: auto;
+    }
+
+    header,
+    footer {
+      position: absolute;
+      left: 0;
       height: 30px;
+      width: 100%;
+      &::before {
+        display: inline-block;
+        width: 1px;
+        height: 100%;
+        vertical-align: middle;
+        content: '';
+      }
+    }
+
+    header {
+      top: 0;
       text-align: center;
       font-size: 0;
       border-bottom: 1px solid #000;
@@ -155,19 +178,8 @@ const LayerWrapperNav = styled.aside`
       }
     }
 
-    header,
     footer {
-      &::before {
-        display: inline-block;
-        width: 1px;
-        height: 100%;
-        vertical-align: middle;
-        content: '';
-      }
-    }
-
-    footer {
-      height: 30px;
+      bottom: 0;
       vertical-align: middle;
       text-align: center;
       button {
@@ -181,7 +193,8 @@ const LayerWrapperNav = styled.aside`
 
 const LayerListUl = styled.ul`
   width: 100%;
-  height: auto;
+  height: 100%;
+  overflow-y: auto;
 
   li {
     position: relative;

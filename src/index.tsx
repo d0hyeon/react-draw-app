@@ -1,9 +1,8 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import { Global, css } from '@emotion/core';
-import 'antd/dist/antd.css'; 
+import 'antd/dist/antd.css';
 
 const baseCss = css`
   * {
@@ -40,8 +39,8 @@ const baseCss = css`
   html {
     font-size: 0.625rem;
     font-family: 'SandollNeo', Arial, sans-serif;
-    
-    @media (max-width:320px){
+
+    @media (max-width: 320px) {
       font-size: 8px;
     }
   }
@@ -93,14 +92,39 @@ const baseCss = css`
   textarea {
     resize: none;
   }
-`;
 
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #ddd transparent;
+    scrollbar-face-color: #e0e0e0;
+    scrollbar-track-color: #fff;
+    scrollbar-arrow-color: none;
+    scrollbar-highlight-color: #e0e0e0;
+    scrollbar-3dlight-color: none;
+    scrollbar-shadow-color: #e0e0e0;
+    scrollbar-darkshadow-color: none;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background-color: #ddd;
+    }
+    &::-webkit-scrollbar-button {
+      width: 0;
+      height: 0;
+    }
+  }
+`;
 
 ReactDOM.render(
   <React.StrictMode>
-    <Global styles={baseCss}/>
+    <Global styles={baseCss} />
     <App />
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
-

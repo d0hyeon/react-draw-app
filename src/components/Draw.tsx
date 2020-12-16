@@ -202,10 +202,10 @@ const Header = styled.header`
 
 const WrapperDiv = styled.div`
   position: relative;
-  display: flex;
   width: 100vw;
   height: 100vh;
   padding-top: ${HEADER_HEIGHT}px;
+  display: flex;
   flex-direction: column;
 
   > nav {
@@ -213,10 +213,14 @@ const WrapperDiv = styled.div`
   }
 
   > .layout {
+    flex: 0 0 auto;
     position: relative;
     display: flex;
     justify-content: space-around;
     flex: 1 0 auto;
+    width: 100%;
+    height: calc(100% - ${HEADER_HEIGHT}px);
+    overflow-y: auto;
 
     aside {
       flex: 0 0 auto;
