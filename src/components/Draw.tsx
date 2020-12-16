@@ -154,19 +154,24 @@ const Draw: React.FC = () => {
         <div className="layout">
           <ToolNavigate />
           <main>
-            <LasterCanvas />
-            {layers.map((layerId, idx) => (
-              <Canvas
-                key={layerId}
-                id={layerId}
-                isCurrent={layerId === currentLayerId}
-                defaultWidth={configState.width}
-                defaultHeight={configState.height}
-                customCss={css`
-                  z-index: ${layers.length - idx};
-                `}
-              />
-            ))}
+            <CanvasWrapperDiv width={configState.width} height={configState.height}>
+              <div>
+                <LasterCanvas />
+                {layers.map((layerId, idx) => (
+                  <Canvas
+                    key={layerId}
+                    id={layerId}
+                    isCurrent={layerId === currentLayerId}
+                    defaultWidth={configState.width}
+                    defaultHeight={configState.height}
+                    customCss={css`
+                      z-index: ${layers.length - idx};
+                    `}
+                  />
+                ))}
+              </div>
+            </CanvasWrapperDiv>
+
             <canvas className="background" width={`${configState.width}px`} height={`${configState.height}px`} />
           </main>
           <LayerNavigate />
@@ -175,6 +180,24 @@ const Draw: React.FC = () => {
     </>
   );
 };
+
+const CanvasWrapperDiv = styled.div<{ width: number; height: number }>`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-image: url('https://pixlr.com/img/misc/square-bg.png');
+  ${({ width, height }) => `
+    width: ${width}px;
+    height: ${height}px;
+  `};
+
+  > div {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+`;
 
 const Header = styled.header`
   position: fixed;
@@ -240,15 +263,9 @@ const WrapperDiv = styled.div`
 
     canvas {
       position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
+      left: 0;
+      top: 0;
       background-color: transparent;
-
-      &.background {
-        background-image: url('https://pixlr.com/img/misc/square-bg.png');
-        z-index: 0;
-      }
     }
   }
 `;
