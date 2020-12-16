@@ -214,10 +214,18 @@ const WrapperDiv = styled.div`
 
   > .layout {
     position: relative;
+    display: flex;
+    justify-content: space-around;
     flex: 1 0 auto;
+
+    aside {
+      flex: 0 0 auto;
+    }
   }
 
   main {
+    position: relative;
+    width: 100%;
     height: 100%;
     padding: 30px 0;
     background-color: #222;

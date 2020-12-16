@@ -127,10 +127,7 @@ const LayerNavigate = () => {
 
 export default LayerNavigate;
 
-const LayerWrapperNav = styled.nav`
-  position: absolute;
-  right: 0;
-  top: 0;
+const LayerWrapperNav = styled.aside`
   height: 100%;
   width: 300px;
   background-color: #292c31;

@@ -39,11 +39,8 @@ const ToolSide: React.FC = () => {
 };
 
 const Side = styled.aside`
-  position: absolute;
-  background: #292c31;
-  top: 0;
-  left: 0;
   height: 100%;
+  background: #292c31;
 
   ul {
     width: 100%;
