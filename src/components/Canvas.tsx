@@ -18,17 +18,6 @@ const Canvas: React.FC<Props> = ({ id, isCurrent, width, height, customCss }) =>
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   React.useLayoutEffect(() => {
-    const canvas = layerState.canvas;
-    if (canvas && layerState.contextState.background) {
-      const context = canvas.getContext('2d');
-      const defaultFillStyle = context.fillStyle;
-      context.fillStyle = layerState.contextState.background;
-      context.fillRect(0, 0, width, height);
-      context.fillStyle = defaultFillStyle;
-    }
-  }, [layerState.contextState.background, layerState.canvas, width, height]);
-
-  React.useLayoutEffect(() => {
     setLayerState((prev) => ({
       ...prev,
       canvas: canvasRef.current,
@@ -36,18 +25,23 @@ const Canvas: React.FC<Props> = ({ id, isCurrent, width, height, customCss }) =>
   }, [canvasRef.current]);
 
   return (
-    <CanvasWrapper isCurrent={isCurrent} customCss={customCss}>
+    <CanvasWrapper isCurrent={isCurrent} customCss={customCss} background={layerState.background}>
       <canvas id={`canvas${id}`} ref={canvasRef} width={width} height={height} />
     </CanvasWrapper>
   );
 };
 
-const CanvasWrapper = styled.div<Pick<Props, 'isCurrent' | 'customCss'>>`
+interface StyledProps extends Pick<Props, 'isCurrent' | 'customCss'> {
+  background?: string;
+}
+
+const CanvasWrapper = styled.div<StyledProps>`
   position: absolute;
   ${({ customCss }) => customCss}
 
   canvas {
     border: 1px solid #fff;
+    background: ${({ background }) => background || 'transparent'};
   }
 `;
 

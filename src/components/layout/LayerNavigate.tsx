@@ -14,6 +14,8 @@ interface LayerItemProps {
   onSelect: (id: ID) => void;
 }
 
+const DEFAULT_CANVAS_BACKGROUND = 'https://pixlr.com/img/misc/square-bg.png';
+
 const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelect }) => {
   const [layer, setLayer] = useRecoilState(layerEntity(id));
 
@@ -33,12 +35,13 @@ const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelec
     },
     [imageSrc],
   );
+  console.log(layer.background);
   return (
     <li key={id} className={`${isCurrent ? 'active' : ''}`} onClick={() => onSelect(id)}>
       <figure>
-        <div className="frame">
+        <ThunbmailDiv className="frame" background={layer.background}>
           <img src={imageSrc} title={layer.title} onError={onErrorImage} />
-        </div>
+        </ThunbmailDiv>
         <figcaption>
           <ToggleInput defaultValue={layer.title} updateValue={onChangeTitle} />
           <div>
@@ -190,6 +193,11 @@ const LayerWrapperNav = styled.aside`
   }
 `;
 
+const ThunbmailDiv = styled.div<{ background: string }>`
+  ${({ background }) =>
+    background ? `background: ${background};` : `background-image: url(${DEFAULT_CANVAS_BACKGROUND});`}
+`;
+
 const LayerListUl = styled.ul`
   width: 100%;
   height: 100%;
@@ -214,7 +222,6 @@ const LayerListUl = styled.ul`
         width: 40px;
         margin-right: 5px;
         border: 1px solid #fff;
-        background-image: url('https://pixlr.com/img/misc/square-bg.png');
         background-size: 80%;
       }
 
