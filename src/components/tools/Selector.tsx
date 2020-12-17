@@ -4,6 +4,7 @@ import useSwipe from '@odnh/use-swipe';
 import { ToolComponentProps } from 'src/types/tool';
 import useClickOuter from 'src/hooks/useClickOuter';
 import { StrokeEvent } from 'src/types/common';
+import { useKeyPress } from '@odnh/use-key-press';
 
 const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolState, width, height }) => {
   const [isSelected, setIsSelected] = React.useState<boolean>(false);
@@ -11,6 +12,7 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolSta
   const divRef = React.useRef(null);
   const isClickedOuter = useClickOuter(divRef);
   const swipeState = useSwipe(canvasRef);
+  const pressingKeyCodes = useKeyPress();
   const context = layerState.canvas?.getContext?.('2d') ?? null;
 
   const { strokeX, strokeY } = React.useMemo(() => {
@@ -38,6 +40,32 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolSta
       setIsSelected(false);
     }
   }, [isClickedOuter]);
+
+  React.useEffect(() => {
+    if (pressingKeyCodes.includes('Delete') && isSelected) {
+      if (pressingKeyCodes.length === 1) {
+        context.globalCompositeOperation = 'destination-out';
+        context.fillRect(0, 0, width, height);
+        const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
+          detail: {
+            strokeX: 0,
+            strokeY: 0,
+            strokeHeight: 0,
+            strokeWidth: 0,
+          },
+        });
+        prevSwipeRef.current = { x: 0, y: 0 };
+        const contextEvent = new CustomEvent('contextChange', {
+          detail: context,
+        });
+
+        layerState.canvas.dispatchEvent(strokeEvent);
+        layerState.canvas.dispatchEvent(contextEvent);
+        setDivProps((prev) => ({ ...prev, width: 0, height: 0 }));
+        setIsSelected(false);
+      }
+    }
+  }, [pressingKeyCodes, layerState.canvas, isSelected, width, height]);
 
   React.useLayoutEffect(() => {
     if (isSelected) {
