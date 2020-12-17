@@ -17,23 +17,25 @@ const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerSt
 
   const onMouseMove = React.useCallback(
     ({ offsetX, offsetY }) => {
-      const { strokeX = 0, strokeY = 0, strokeWidth = 0, strokeHeight = 0 } = context;
+      const { strokeX = 0, strokeY = 0, strokeWidth = 0, strokeHeight = 0, lineWidth = 0 } = context;
 
       if (context.globalCompositeOperation !== 'destination-out') {
         if (strokeX === 0) {
           context.strokeX = offsetX;
         } else if (strokeX > offsetX) {
           context.strokeX = offsetX;
-        } else if (strokeWidth < offsetX) {
-          context.strokeWidth = offsetX;
+          context.strokeWidth = strokeWidth + strokeX - offsetX + lineWidth;
+        } else if (strokeWidth < offsetX - strokeX) {
+          context.strokeWidth = offsetX - strokeX + lineWidth;
         }
 
         if (strokeY === 0) {
           context.strokeY = offsetY;
         } else if (strokeY > offsetY) {
           context.strokeY = offsetY;
-        } else if (strokeHeight < offsetY) {
-          context.strokeHeight = offsetY;
+          context.strokeHeight = strokeHeight + strokeY - offsetY + lineWidth;
+        } else if (strokeHeight < offsetY - strokeY) {
+          context.strokeHeight = offsetY - strokeY + lineWidth;
         }
       }
       const strokeEvent = new CustomEvent<Partial<CanvasRenderingContext2D>>('strokeChange', {
