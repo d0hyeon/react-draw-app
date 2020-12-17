@@ -131,15 +131,18 @@ const Draw: React.FC = () => {
     [currentLayerId, configState.height, configState.width, layerState],
   );
 
-  const onStrokeChange = React.useCallback(({ detail: context }: CustomEvent<Partial<CanvasRenderingContext2D>>) => {
-    setLayerState((prev) => ({
-      ...prev,
-      contextState: {
-        ...prev.contextState,
-        ...context,
-      },
-    }));
-  }, []);
+  const onStrokeChange = React.useCallback(
+    ({ detail: context }: CustomEvent<Partial<CanvasRenderingContext2D>>) => {
+      setLayerState((prev) => ({
+        ...prev,
+        contextState: {
+          ...prev.contextState,
+          ...context,
+        },
+      }));
+    },
+    [setLayerState],
+  );
 
   React.useLayoutEffect(() => {
     if (!layerState.isLock) {
@@ -151,7 +154,7 @@ const Draw: React.FC = () => {
         layerState.canvas?.removeEventListener('strokeChange', onStrokeChange);
       };
     }
-  }, [onContextChange, layerState.canvas, layerState.isLock]);
+  }, [onContextChange, onStrokeChange, layerState.canvas, layerState.isLock]);
 
   return (
     <>
