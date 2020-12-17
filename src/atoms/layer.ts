@@ -7,7 +7,6 @@ export interface ContextState {
   strokeY: number;
   strokeWidth: number;
   strokeHeight: number;
-  background?: string;
   imageData: ImageData | null;
 }
 
@@ -17,6 +16,7 @@ export interface LayerEntity {
   isDisplay: boolean;
   isLock: boolean;
   canvas: HTMLCanvasElement | null;
+  background: string;
   contextState: ContextState;
 }
 
@@ -31,13 +31,13 @@ const INITIAL_LAYER_ENTITY_STATE: LayerEntity = {
   isDisplay: true,
   isLock: false,
   canvas: null,
+  background: '',
   contextState: {
     strokeX: 0,
     strokeY: 0,
     strokeWidth: 0,
     strokeHeight: 0,
     imageData: null,
-    background: '',
   },
 };
 const DEFAULT_LAYER_ID: ID = nanoid();
@@ -55,12 +55,7 @@ export const layerEntity = atomFamily<LayerEntity, ID>({
       ...INITIAL_LAYER_ENTITY_STATE,
       id,
       title: isDefaultLayer ? 'Background' : `Layer-${id}`,
-      ...(isDefaultLayer && {
-        contextState: {
-          ...INITIAL_LAYER_ENTITY_STATE.contextState,
-          background: '#fff',
-        },
-      }),
+      background: isDefaultLayer ? '#fff' : '',
     };
   },
 });
