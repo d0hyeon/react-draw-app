@@ -21,18 +21,18 @@ const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerSt
 
       if (context.globalCompositeOperation !== 'destination-out') {
         if (strokeX === 0) {
-          context.strokeX = offsetX;
+          context.strokeX = offsetX - lineWidth;
         } else if (strokeX > offsetX) {
-          context.strokeX = offsetX;
+          context.strokeX = offsetX - lineWidth;
           context.strokeWidth = strokeWidth + strokeX - offsetX + lineWidth;
         } else if (strokeWidth < offsetX - strokeX) {
           context.strokeWidth = offsetX - strokeX + lineWidth;
         }
 
         if (strokeY === 0) {
-          context.strokeY = offsetY;
+          context.strokeY = offsetY - lineWidth;
         } else if (strokeY > offsetY) {
-          context.strokeY = offsetY;
+          context.strokeY = offsetY - lineWidth;
           context.strokeHeight = strokeHeight + strokeY - offsetY + lineWidth;
         } else if (strokeHeight < offsetY - strokeY) {
           context.strokeHeight = offsetY - strokeY + lineWidth;
