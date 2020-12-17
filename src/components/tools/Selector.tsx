@@ -2,16 +2,10 @@ import React from 'react';
 import styled from '@emotion/styled';
 import useSwipe from '@odnh/use-swipe';
 import { ToolComponentProps } from 'src/types/tool';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { tool } from 'src/atoms/tool';
-import { configSelector } from 'src/atoms/config';
-import { layerEntity } from 'src/atoms/layer';
 import useClickOuter from 'src/hooks/useClickOuter';
+import { StrokeEvent } from 'src/types/common';
 
-const Selector: React.FC<ToolComponentProps> = ({ canvasRef, id }) => {
-  const toolState = useRecoilValue(tool);
-  const configState = useRecoilValue(configSelector);
-  const [layerState, setLayerState] = useRecoilState(layerEntity(id));
+const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolState, width, height }) => {
   const [isSelected, setIsSelected] = React.useState<boolean>(false);
   const prevSwipeRef = React.useRef({ x: 0, y: 0 });
   const divRef = React.useRef(null);
@@ -48,8 +42,8 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, id }) => {
   React.useLayoutEffect(() => {
     if (isSelected) {
       if (swipeState.state === 'move') {
-        const image = context.getImageData(0, 0, configState.width, configState.height);
-        context.clearRect(0, 0, configState.width, configState.height);
+        const image = context.getImageData(0, 0, width, height);
+        context.clearRect(0, 0, width, height);
 
         const diffX = swipeState.x - prevSwipeRef.current.x;
         const diffY = swipeState.y - prevSwipeRef.current.y;
@@ -69,17 +63,16 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, id }) => {
         }));
       } else {
         prevSwipeRef.current = { x: 0, y: 0 };
-        setLayerState((prev) => ({
-          ...prev,
-          contextState: {
-            ...prev.contextState,
+        const strokeEvent = new CustomEvent<Partial<StrokeEvent>>('strokeChange', {
+          detail: {
             strokeX: context.strokeX,
             strokeY: context.strokeY,
           },
-        }));
+        });
+        layerState.canvas.dispatchEvent(strokeEvent);
       }
     }
-  }, [swipeState, isSelected, strokeX, strokeY, toolState, configState.width, configState.height]);
+  }, [swipeState, isSelected, strokeX, strokeY, toolState, width, height]);
 
   return <SelectDiv ref={divRef} {...divProps} isDisplay={isSelected} onClick={() => setIsSelected(true)} />;
 };
