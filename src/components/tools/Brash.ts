@@ -58,11 +58,6 @@ const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerSt
       context.strokeStyle = toolState.color;
       context.lineWidth = toolState.lineWidth;
       context.moveTo(offsetX, offsetY);
-
-      const contextEvent = new CustomEvent<CanvasRenderingContext2D>('contextChange', {
-        detail: context,
-      });
-      layerState.canvas.dispatchEvent(contextEvent);
       canvasRef.current.addEventListener('mousemove', throttledOnMouseMove);
     },
     [context, layerState.canvas, toolState.color, toolState.lineWidth, throttledOnMouseMove],
@@ -70,7 +65,15 @@ const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerSt
 
   const onMouseUp = React.useCallback(() => {
     canvasRef.current.removeEventListener('mousemove', throttledOnMouseMove);
+    const contextEvent = new CustomEvent<CanvasRenderingContext2D>('contextChange', {
+      detail: context,
+    });
+    layerState.canvas.dispatchEvent(contextEvent);
   }, [canvasRef, context, throttledOnMouseMove]);
+
+  const onMouseLeave = React.useCallback(() => {
+    canvasRef.current.removeEventListener('mousemove', throttledOnMouseMove);
+  }, [canvasRef, throttledOnMouseMove]);
 
   const onDrag = React.useCallback((e) => {
     e.preventDefault();
@@ -92,18 +95,18 @@ const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerSt
     if (context) {
       canvasRef.current?.addEventListener('mousedown', onMouseDown);
       canvasRef.current?.addEventListener('mouseup', onMouseUp);
-      canvasRef.current?.addEventListener('mouseleave', onMouseUp);
+      canvasRef.current?.addEventListener('mouseleave', onMouseLeave);
       canvasRef.current?.addEventListener('dragstart', onDrag);
 
       return () => {
         canvasRef.current?.removeEventListener('mousedown', onMouseDown);
         canvasRef.current?.removeEventListener('mousemove', throttledOnMouseMove);
         canvasRef.current?.removeEventListener('mouseup', onMouseUp);
-        canvasRef.current?.removeEventListener('mouseleave', onMouseUp);
+        canvasRef.current?.removeEventListener('mouseleave', onMouseLeave);
         canvasRef.current?.removeEventListener('dragstart', onDrag);
       };
     }
-  }, [canvasRef, onMouseDown, throttledOnMouseMove, onMouseUp, context, toolState.color, toolState.lineWidth]);
+  }, [canvasRef, onMouseDown, throttledOnMouseMove, onMouseUp, onMouseLeave, context]);
 
   return null;
 };
