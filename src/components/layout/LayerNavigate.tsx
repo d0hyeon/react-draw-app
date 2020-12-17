@@ -35,7 +35,7 @@ const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelec
     },
     [imageSrc],
   );
-  console.log(layer.background);
+
   return (
     <li key={id} className={`${isCurrent ? 'active' : ''}`} onClick={() => onSelect(id)}>
       <figure>
