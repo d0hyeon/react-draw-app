@@ -37,6 +37,8 @@ interface StyledProps extends Pick<Props, 'isCurrent' | 'customCss'> {
 
 const CanvasWrapper = styled.div<StyledProps>`
   position: absolute;
+  width: 100%;
+  height: 100%;
   ${({ customCss }) => customCss}
 
   canvas {
