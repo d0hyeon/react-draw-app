@@ -7,6 +7,8 @@ interface ExtendsComponentProps {
   id: ID;
   toolState: ToolState;
   layerState: LayerEntity;
+  width: number;
+  height: number;
 }
 
 export interface ToolComponentProps extends ExtendsComponentProps {

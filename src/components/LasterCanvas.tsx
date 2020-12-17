@@ -23,6 +23,8 @@ const LasterCanvas = () => {
         canvasRef={canvasRef}
         toolState={toolState}
         layerState={layerState}
+        width={configState.width}
+        height={configState.height}
         {...(curreutTool.props ?? {})}
       />
     </>
