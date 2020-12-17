@@ -1,12 +1,17 @@
 import { Tool } from 'src/types/tool';
 import * as Brash from 'src/components/tools/Brash';
 import BrashNavigate from 'src/components/tools/BrashNavigate';
+import * as Selector from 'src/components/tools/Selector';
 
 export type Tools = {
   [key: string]: Tool;
 };
 
 export const toolConfigs: Tools = {
+  [Selector.key]: {
+    icon: Selector.icon,
+    Component: Selector.default,
+  },
   [Brash.key]: {
     icon: Brash.icon,
     Component: Brash.default,
