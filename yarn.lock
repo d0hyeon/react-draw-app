@@ -1636,19 +1636,18 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@odnh/use-history-state@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@odnh/use-history-state/-/use-history-state-0.0.3.tgz#e6e786ca74831e7320c5a51440f89568817d412f"
-  integrity sha512-vV+umC9aupcbi9b80S4A5bsCtQWuXf+qLLeWnLc6mZ+4Fx6FM5mQExTiu6MzswoJqeYTl4wc+qcru+p/N3k1bA==
+"@odnh/use-history-state@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@odnh/use-history-state/-/use-history-state-0.1.0.tgz#a370326ac1c8711b69f439a3305bdcafb5e7c7ab"
+  integrity sha512-wQ/nlYdXIE640lbjPQeA49jCXhPAD06gd6g3/HENwgjRR3vgqawlDX5h4+/Vj+6RNlrB7iakP8W6a51LJN7+Yw==
   dependencies:
     react-is "^17.0.1"
 
-"@odnh/use-key-press@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@odnh/use-key-press/-/use-key-press-0.0.1.tgz#26cfd6fcc1950988ce023b1fc1d4d959fc1cad91"
-  integrity sha512-SyFRFivAZd1zowDpPctxOXGaBBjeXzfT8yLXzLi2O4y00sPlZAaTgPbztJjVahE1l9/M6BlO8oGCUuhU8HFpQQ==
+"@odnh/use-key-press@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@odnh/use-key-press/-/use-key-press-0.0.5.tgz#8ae931ca46de1b9fe9eff633cb482619e203cf7a"
+  integrity sha512-12HTySE2LVS2PEYbXrLFHBPhVBItPPtIwYltkUjDsnXv9S5Jk28/Ww/WdzayVYRgWRdx5KX8NnaA7zbFdVy+LA==
   dependencies:
-    "@odnh/use-history-state" "^0.0.3"
     react-is "^17.0.1"
 
 "@odnh/use-swipe@^0.1.3":
