@@ -19,22 +19,23 @@ const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerSt
     ({ offsetX, offsetY }) => {
       const { strokeX = 0, strokeY = 0, strokeWidth = 0, strokeHeight = 0 } = context;
 
-      if (strokeX === 0) {
-        context.strokeX = offsetX;
-      } else if (strokeX > offsetX) {
-        context.strokeX = offsetX;
-      } else if (strokeWidth < offsetX) {
-        context.strokeWidth = offsetX;
-      }
+      if (context.globalCompositeOperation !== 'destination-out') {
+        if (strokeX === 0) {
+          context.strokeX = offsetX;
+        } else if (strokeX > offsetX) {
+          context.strokeX = offsetX;
+        } else if (strokeWidth < offsetX) {
+          context.strokeWidth = offsetX;
+        }
 
-      if (strokeY === 0) {
-        context.strokeY = offsetY;
-      } else if (strokeY > offsetY) {
-        context.strokeY = offsetY;
-      } else if (strokeHeight < offsetY) {
-        context.strokeHeight = offsetY;
+        if (strokeY === 0) {
+          context.strokeY = offsetY;
+        } else if (strokeY > offsetY) {
+          context.strokeY = offsetY;
+        } else if (strokeHeight < offsetY) {
+          context.strokeHeight = offsetY;
+        }
       }
-
       const strokeEvent = new CustomEvent<Partial<CanvasRenderingContext2D>>('strokeChange', {
         detail: {
           strokeX: context.strokeX,
