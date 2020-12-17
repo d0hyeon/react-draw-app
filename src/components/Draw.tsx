@@ -30,8 +30,19 @@ const Draw: React.FC = () => {
   const [willChangeImage, setWillChangeImage] = React.useState<null | ImageData>(null);
   const [willChangeContextState, setWillChangeContextState] = React.useState<null | ContextState>(null);
 
-  const [_, setPrevState, prevHistory] = useHistoryState<HistoryType>();
-  const [__, setNextState, nextHistory] = useHistoryState<HistoryType>();
+  const [history, setHistory, prevHistory] = useHistoryState<HistoryType>();
+  const restoredRef = React.useRef<HistoryType[]>([]);
+
+  React.useLayoutEffect(() => {
+    if (layerState.canvas) {
+      setHistory({
+        layerId: currentLayerId,
+        imageData: layerState.canvas.getContext('2d').getImageData(0, 0, configState.width, configState.height),
+        contextState: layerState.contextState,
+      });
+    }
+  }, [layerState.canvas]);
+
   const pressingKeyCodes = useKeyPress();
 
   const onChangeTitle = React.useCallback(
@@ -44,38 +55,26 @@ const Draw: React.FC = () => {
     [setConfigState],
   );
 
-  const getCurrentStateToHistory = React.useCallback(() => {
-    return {
-      layerId: currentLayerId,
-      imageData: layerState.canvas.getContext('2d').getImageData(0, 0, configState.width, configState.height),
-      contextState: layerState.contextState,
-    };
-  }, [currentLayerId, layerState.canvas, layerState.contextState, configState.width, configState.height]);
-
   const prev = React.useCallback(() => {
-    const state = prevHistory.pop();
-    if (state) {
-      setNextState(getCurrentStateToHistory());
-      setWillChangeLayerId(state.layerId);
-      setTimeout(() => {
-        if (state.imageData) setWillChangeImage(state.imageData);
-        if (state.contextState) setWillChangeContextState(state.contextState);
-      }, 0);
+    const prevState = prevHistory.pop();
+
+    if (prevState) {
+      restoredRef.current = [...restoredRef.current, history];
+      setWillChangeLayerId(prevState.layerId);
+      if (prevState.imageData) setWillChangeImage(prevState.imageData);
+      if (prevState.contextState) setWillChangeContextState(prevState.contextState);
     }
-  }, [getCurrentStateToHistory]);
+  }, [history]);
 
   const next = React.useCallback(() => {
-    const state = nextHistory.pop();
-
-    if (state) {
-      setPrevState(getCurrentStateToHistory());
-      setWillChangeLayerId(state.layerId);
-      setTimeout(() => {
-        if (state.imageData) setWillChangeImage(state.imageData);
-        if (state.contextState) setWillChangeContextState(state.contextState);
-      }, 0);
+    const restoreState = restoredRef.current.pop();
+    if (restoreState) {
+      setHistory(restoreState);
+      setWillChangeLayerId(restoreState.layerId);
+      if (restoreState.imageData) setWillChangeImage(restoreState.imageData);
+      if (restoreState.contextState) setWillChangeContextState(restoreState.contextState);
     }
-  }, [getCurrentStateToHistory]);
+  }, []);
 
   React.useEffect(() => {
     if (pressingKeyCodes.includes('ControlLeft') && pressingKeyCodes.includes('KeyZ')) {
@@ -123,7 +122,7 @@ const Draw: React.FC = () => {
       }
 
       const image = context.getImageData(0, 0, configState.width, configState.height);
-      setPrevState({
+      setHistory({
         layerId: currentLayerId,
         imageData: image,
         contextState: layerState.contextState,
