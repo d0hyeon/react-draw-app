@@ -20,8 +20,8 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
     return { strokeX, strokeY };
   }, [layerState.contextState]);
 
-  const [divProps, setDivProps] = React.useState(() => ({
-    x: strokeY,
+  const [canvasStyles, setCanvasStyle] = React.useState(() => ({
+    x: strokeX,
     y: strokeY,
     width: layerState.contextState.strokeWidth,
     height: layerState.contextState.strokeHeight,
@@ -29,8 +29,8 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
 
   React.useEffect(() => {
     const { contextState } = layerState;
-    console.log(contextState);
-    setDivProps({
+
+    setCanvasStyle({
       x: contextState.strokeX,
       y: contextState.strokeY,
       width: contextState.strokeWidth,
@@ -38,26 +38,46 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
     });
   }, [layerState.contextState]);
 
-  const initialSelectorCanvas = React.useCallback(() => {
-    if (context) {
-      const imageData = context.getImageData(divProps.x, divProps.y, divProps.width, divProps.height);
-      const selectorContext = selectorRef.current?.getContext?.('2d');
-      selectorContext?.putImageData?.(imageData, 0, 0, 0, 0, divProps.width, divProps.height);
-      context.clearRect(0, 0, width, height);
+  const initialSelectorCanvas = React.useCallback(
+    ({ detail: context }) => {
+      if (context) {
+        const { strokeX, strokeY, strokeWidth, strokeHeight } = context;
+        if (strokeWidth && strokeHeight) {
+          const imageData = context.getImageData(strokeX, strokeY, strokeWidth, strokeHeight);
+          const selectorContext = selectorRef.current?.getContext?.('2d');
+          selectorContext?.putImageData?.(imageData, 0, 0, 0, 0, strokeWidth, strokeHeight);
+          context.clearRect(0, 0, width, height);
+          console.log('지운당');
+        }
+      }
+    },
+    [canvasStyles, selectorRef, width, height],
+  );
+
+  const convertImageToLayerState = () => {
+    if (selectorRef.current && context) {
+      const selectorContext = selectorRef.current.getContext('2d');
+      const { x, y, width: canvasWidth, height: canvasHeight } = canvasStyles;
+      if (width || height) {
+        const imageData = selectorContext.getImageData(0, 0, canvasWidth, canvasHeight);
+        context.putImageData(imageData, x, y, 0, 0, canvasWidth, canvasHeight);
+        const contextEvent = new CustomEvent<StrokeEvent>('contextChange', {
+          detail: context,
+        });
+        console.log('반영한당');
+        layerState.canvas.dispatchEvent(contextEvent);
+      }
     }
-  }, [divProps, selectorRef]);
+  };
+
+  React.useLayoutEffect(() => {
+    if (layerState.canvas) {
+      initialSelectorCanvas({ detail: context });
+    }
+  }, [layerState.canvas, context]);
 
   React.useEffect(() => {
-    if (selectorRef.current && layerState.canvas) {
-      initialSelectorCanvas();
-      layerState.canvas.addEventListener('strokeChange', initialSelectorCanvas);
-
-      return () => layerState.canvas.removeEventListener('strokeChange', initialSelectorCanvas);
-    }
-  }, [layerState.canvas, selectorRef]);
-
-  React.useEffect(() => {
-    setDivProps((prev) => ({
+    setCanvasStyle((prev) => ({
       ...prev,
       x: strokeX,
       y: strokeY,
@@ -80,7 +100,7 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
         context.strokeWidth = 0;
         context.strokeHeight = 0;
 
-        setDivProps((prev) => ({ ...prev, width: 0, height: 0 }));
+        setCanvasStyle((prev) => ({ ...prev, width: 0, height: 0 }));
         setIsSelected(false);
 
         if (layerState.canvas) {
@@ -105,7 +125,7 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
         const diffX = swipeState.x - prevSwipeRef.current.x;
         const diffY = swipeState.y - prevSwipeRef.current.y;
 
-        setDivProps((prev) => ({
+        setCanvasStyle((prev) => ({
           ...prev,
           x: prev.x + diffX,
           y: prev.y + diffY,
@@ -116,22 +136,21 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
         };
       }
     }
-  }, [swipeState, isSelected, setDivProps, prevSwipeRef]);
+  }, [swipeState, isSelected, setCanvasStyle, prevSwipeRef]);
 
   React.useEffect(() => {
-    if (swipeState.state === 'done' && layerState.canvas) {
-      const contextEvent = new CustomEvent<StrokeEvent>('contextChange', {
-        detail: context,
-      });
-      layerState.canvas.dispatchEvent(contextEvent);
+    if (swipeState.state === 'done' && layerState.canvas && prevSwipeRef.current.x && prevSwipeRef.current.y) {
+      convertImageToLayerState();
       prevSwipeRef.current = {
         x: 0,
         y: 0,
       };
     }
-  }, [swipeState.state, divProps.x, divProps.y, context, prevSwipeRef, layerState.canvas]);
+  }, [swipeState.state, convertImageToLayerState, layerState.canvas]);
 
-  return <SelectorCanvas ref={selectorRef} {...divProps} isDisplay={isSelected} onClick={() => setIsSelected(true)} />;
+  return (
+    <SelectorCanvas ref={selectorRef} {...canvasStyles} isDisplay={isSelected} onClick={() => setIsSelected(true)} />
+  );
 };
 
 interface SelectorCanvasProps {
