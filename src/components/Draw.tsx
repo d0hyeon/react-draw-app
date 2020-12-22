@@ -272,12 +272,6 @@ const WrapperDiv = styled.div`
     justify-content: center;
     align-items: center;
     overflow-y: auto;
-
-    canvas {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
   }
 `;
 
