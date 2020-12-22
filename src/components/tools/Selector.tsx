@@ -41,18 +41,20 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
   const initialSelectorCanvas = React.useCallback(() => {
     if (context) {
       const imageData = context.getImageData(divProps.x, divProps.y, divProps.width, divProps.height);
-      const selectorContext = selectorRef.current.getContext('2d');
-      selectorContext.putImageData(imageData, 0, 0, 0, 0, divProps.width, divProps.height);
+      const selectorContext = selectorRef.current?.getContext?.('2d');
+      selectorContext?.putImageData?.(imageData, 0, 0, 0, 0, divProps.width, divProps.height);
       context.clearRect(0, 0, width, height);
     }
   }, [divProps, selectorRef]);
 
   React.useEffect(() => {
-    initialSelectorCanvas();
-    layerState.canvas.addEventListener('strokeChange', initialSelectorCanvas);
+    if (selectorRef.current && layerState.canvas) {
+      initialSelectorCanvas();
+      layerState.canvas.addEventListener('strokeChange', initialSelectorCanvas);
 
-    return () => layerState.canvas.removeEventListener('strokeChange', initialSelectorCanvas);
-  }, [layerState.canvas]);
+      return () => layerState.canvas.removeEventListener('strokeChange', initialSelectorCanvas);
+    }
+  }, [layerState.canvas, selectorRef]);
 
   React.useEffect(() => {
     setDivProps((prev) => ({
@@ -78,18 +80,21 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
         context.strokeWidth = 0;
         context.strokeHeight = 0;
 
-        const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
-          detail: context,
-        });
-        prevSwipeRef.current = { x: 0, y: 0 };
-        const contextEvent = new CustomEvent('contextChange', {
-          detail: context,
-        });
-
-        layerState.canvas.dispatchEvent(strokeEvent);
-        layerState.canvas.dispatchEvent(contextEvent);
         setDivProps((prev) => ({ ...prev, width: 0, height: 0 }));
         setIsSelected(false);
+
+        if (layerState.canvas) {
+          const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
+            detail: context,
+          });
+          prevSwipeRef.current = { x: 0, y: 0 };
+          const contextEvent = new CustomEvent('contextChange', {
+            detail: context,
+          });
+
+          layerState.canvas.dispatchEvent(strokeEvent);
+          layerState.canvas.dispatchEvent(contextEvent);
+        }
       }
     }
   }, [pressingKeyCodes, layerState.canvas, isSelected, width, height]);
@@ -114,7 +119,7 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
   }, [swipeState, isSelected, setDivProps, prevSwipeRef]);
 
   React.useEffect(() => {
-    if (swipeState.state === 'done') {
+    if (swipeState.state === 'done' && layerState.canvas) {
       const contextEvent = new CustomEvent<StrokeEvent>('contextChange', {
         detail: context,
       });
