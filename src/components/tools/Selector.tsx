@@ -6,11 +6,11 @@ import useClickOuter from 'src/hooks/useClickOuter';
 import { StrokeEvent } from 'src/types/common';
 import { useKeyPress } from '@odnh/use-key-press';
 
-const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolState, width, height }) => {
+const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, height }) => {
   const [isSelected, setIsSelected] = React.useState<boolean>(false);
   const prevSwipeRef = React.useRef({ x: 0, y: 0 });
-  const divRef = React.useRef(null);
-  const isClickedOuter = useClickOuter(divRef);
+  const selectorRef = React.useRef<HTMLCanvasElement>(null);
+  const isClickedOuter = useClickOuter(selectorRef);
   const swipeState = useSwipe(canvasRef);
   const pressingKeyCodes = useKeyPress();
   const context = layerState.canvas?.getContext?.('2d') ?? null;
@@ -26,6 +26,33 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolSta
     width: layerState.contextState.strokeWidth,
     height: layerState.contextState.strokeHeight,
   }));
+
+  React.useEffect(() => {
+    const { contextState } = layerState;
+    console.log(contextState);
+    setDivProps({
+      x: contextState.strokeX,
+      y: contextState.strokeY,
+      width: contextState.strokeWidth,
+      height: contextState.strokeHeight,
+    });
+  }, [layerState.contextState]);
+
+  const initialSelectorCanvas = React.useCallback(() => {
+    if (context) {
+      const imageData = context.getImageData(divProps.x, divProps.y, divProps.width, divProps.height);
+      const selectorContext = selectorRef.current.getContext('2d');
+      selectorContext.putImageData(imageData, 0, 0, 0, 0, divProps.width, divProps.height);
+      context.clearRect(0, 0, width, height);
+    }
+  }, [divProps, selectorRef]);
+
+  React.useEffect(() => {
+    initialSelectorCanvas();
+    layerState.canvas.addEventListener('strokeChange', initialSelectorCanvas);
+
+    return () => layerState.canvas.removeEventListener('strokeChange', initialSelectorCanvas);
+  }, [layerState.canvas]);
 
   React.useEffect(() => {
     setDivProps((prev) => ({
@@ -46,13 +73,13 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolSta
       if (pressingKeyCodes.length === 1) {
         context.globalCompositeOperation = 'destination-out';
         context.fillRect(0, 0, width, height);
+        context.strokeX = 0;
+        context.strokeY = 0;
+        context.strokeWidth = 0;
+        context.strokeHeight = 0;
+
         const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
-          detail: {
-            strokeX: 0,
-            strokeY: 0,
-            strokeHeight: 0,
-            strokeWidth: 0,
-          },
+          detail: context,
         });
         prevSwipeRef.current = { x: 0, y: 0 };
         const contextEvent = new CustomEvent('contextChange', {
@@ -70,42 +97,39 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolSta
   React.useLayoutEffect(() => {
     if (isSelected) {
       if (swipeState.state === 'move') {
-        const image = context.getImageData(0, 0, width, height);
-        context.clearRect(0, 0, width, height);
-
         const diffX = swipeState.x - prevSwipeRef.current.x;
         const diffY = swipeState.y - prevSwipeRef.current.y;
 
-        context.putImageData(image, diffX, diffY);
-        prevSwipeRef.current = {
-          x: swipeState.x,
-          y: swipeState.y,
-        };
-
-        context.strokeX = context.strokeX + diffX;
-        context.strokeY = context.strokeY + diffY;
         setDivProps((prev) => ({
           ...prev,
           x: prev.x + diffX,
           y: prev.y + diffY,
         }));
-      } else {
-        prevSwipeRef.current = { x: 0, y: 0 };
-        const strokeEvent = new CustomEvent<Partial<StrokeEvent>>('strokeChange', {
-          detail: {
-            strokeX: context.strokeX,
-            strokeY: context.strokeY,
-          },
-        });
-        layerState.canvas.dispatchEvent(strokeEvent);
+        prevSwipeRef.current = {
+          x: swipeState.x,
+          y: swipeState.y,
+        };
       }
     }
-  }, [swipeState, isSelected, strokeX, strokeY, toolState, width, height]);
+  }, [swipeState, isSelected, setDivProps, prevSwipeRef]);
 
-  return <SelectDiv ref={divRef} {...divProps} isDisplay={isSelected} onClick={() => setIsSelected(true)} />;
+  React.useEffect(() => {
+    if (swipeState.state === 'done') {
+      const contextEvent = new CustomEvent<StrokeEvent>('contextChange', {
+        detail: context,
+      });
+      layerState.canvas.dispatchEvent(contextEvent);
+      prevSwipeRef.current = {
+        x: 0,
+        y: 0,
+      };
+    }
+  }, [swipeState.state, divProps.x, divProps.y, context, prevSwipeRef, layerState.canvas]);
+
+  return <SelectorCanvas ref={selectorRef} {...divProps} isDisplay={isSelected} onClick={() => setIsSelected(true)} />;
 };
 
-interface SelectDivProps {
+interface SelectorCanvasProps {
   x: number;
   y: number;
   width: number;
@@ -113,12 +137,13 @@ interface SelectDivProps {
   isDisplay: boolean;
 }
 
-const SelectDiv = styled.div<SelectDivProps>`
+const SelectorCanvas = styled.canvas<SelectorCanvasProps>`
   position: absolute;
   border-color: gray;
   border-width: 0px;
   border-style: solid;
   z-index: 105;
+  background-color: #fff;
 
   ${(props) => `
     left: ${props.x}px;
