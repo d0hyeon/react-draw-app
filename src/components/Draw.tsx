@@ -185,8 +185,6 @@ const Draw: React.FC = () => {
                 ))}
               </div>
             </CanvasWrapperDiv>
-
-            <canvas className="background" width={`${configState.width}px`} height={`${configState.height}px`} />
           </main>
           <LayerNavigate />
         </div>
