@@ -15,26 +15,21 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
   const pressingKeyCodes = useKeyPress();
   const context = layerState.canvas?.getContext?.('2d') ?? null;
 
-  const { strokeX, strokeY } = React.useMemo(() => {
-    const { strokeX = 0, strokeY = 0 } = layerState.contextState;
-    return { strokeX, strokeY };
-  }, [layerState.contextState]);
-
   const [canvasStyles, setCanvasStyle] = React.useState(() => ({
-    x: strokeX,
-    y: strokeY,
+    x: layerState.contextState.strokeX,
+    y: layerState.contextState.strokeY,
     width: layerState.contextState.strokeWidth,
     height: layerState.contextState.strokeHeight,
   }));
 
   React.useEffect(() => {
-    const { contextState } = layerState;
+    const { strokeX, strokeY, strokeWidth, strokeHeight } = layerState.contextState;
 
     setCanvasStyle({
-      x: contextState.strokeX,
-      y: contextState.strokeY,
-      width: contextState.strokeWidth,
-      height: contextState.strokeHeight,
+      x: strokeX,
+      y: strokeY,
+      width: strokeWidth,
+      height: strokeHeight,
     });
   }, [layerState.contextState]);
 
@@ -47,7 +42,6 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
           const selectorContext = selectorRef.current?.getContext?.('2d');
           selectorContext?.putImageData?.(imageData, 0, 0, 0, 0, strokeWidth, strokeHeight);
           context.clearRect(0, 0, width, height);
-          console.log('지운당');
         }
       }
     },
@@ -74,10 +68,10 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
   React.useEffect(() => {
     setCanvasStyle((prev) => ({
       ...prev,
-      x: strokeX,
-      y: strokeY,
+      x: layerState.contextState.strokeX,
+      y: layerState.contextState.strokeY,
     }));
-  }, [strokeX, strokeY]);
+  }, [layerState.contextState]);
 
   React.useEffect(() => {
     if (isClickedOuter && isSelected) {
