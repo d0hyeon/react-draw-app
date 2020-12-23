@@ -33,7 +33,7 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
     });
   }, [layerState.contextState]);
 
-  const extractLayerState = React.useCallback(
+  const extractImageFromLayerState = React.useCallback(
     ({ detail: context }) => {
       if (context) {
         const { strokeX, strokeY, strokeWidth, strokeHeight } = context;
@@ -61,7 +61,7 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
 
   React.useLayoutEffect(() => {
     if (layerState.canvas) {
-      extractLayerState({ detail: context });
+      extractImageFromLayerState({ detail: context });
     }
   }, [layerState.canvas, context]);
 
