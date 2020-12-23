@@ -11,7 +11,7 @@ import { useRecoilState } from 'recoil';
 import { ContextState, layer, layerEntity } from 'src/atoms/layer';
 import LayerNavigate from './layout/LayerNavigate';
 import LasterCanvas from './LasterCanvas';
-import { ID } from 'src/types/common';
+import { ID, StrokeEvent } from 'src/types/common';
 import { useHistoryState } from '@odnh/use-history-state';
 import { useKeyPress } from '@odnh/use-key-press';
 
@@ -125,14 +125,20 @@ const Draw: React.FC = () => {
       setHistory({
         layerId: currentLayerId,
         imageData: image,
-        contextState: layerState.contextState,
+        contextState: {
+          ...layerState.contextState,
+          strokeX: context.strokeX,
+          strokeY: context.strokeY,
+          strokeWidth: context.strokeWidth,
+          strokeHeight: context.strokeHeight,
+        },
       });
     },
     [currentLayerId, configState.height, configState.width, layerState],
   );
 
   const onStrokeChange = React.useCallback(
-    ({ detail: context }: CustomEvent<Partial<CanvasRenderingContext2D>>) => {
+    ({ detail: context }: CustomEvent<StrokeEvent>) => {
       setLayerState((prev) => ({
         ...prev,
         contextState: {
