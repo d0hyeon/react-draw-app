@@ -38,7 +38,7 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
     });
   }, [layerState.contextState]);
 
-  const initialSelectorCanvas = React.useCallback(
+  const extractLayerState = React.useCallback(
     ({ detail: context }) => {
       if (context) {
         const { strokeX, strokeY, strokeWidth, strokeHeight } = context;
@@ -61,18 +61,13 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
       if (width || height) {
         const imageData = selectorContext.getImageData(0, 0, canvasWidth, canvasHeight);
         context.putImageData(imageData, x, y, 0, 0, canvasWidth, canvasHeight);
-        const contextEvent = new CustomEvent<StrokeEvent>('contextChange', {
-          detail: context,
-        });
-        console.log('반영한당');
-        layerState.canvas.dispatchEvent(contextEvent);
       }
     }
   };
 
   React.useLayoutEffect(() => {
     if (layerState.canvas) {
-      initialSelectorCanvas({ detail: context });
+      extractLayerState({ detail: context });
     }
   }, [layerState.canvas, context]);
 
@@ -119,6 +114,19 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
     }
   }, [pressingKeyCodes, layerState.canvas, isSelected, width, height]);
 
+  React.useEffect(() => {
+    if (swipeState.state === 'done') {
+      const { x, y } = prevSwipeRef.current;
+      if (!!x && !!y) {
+        convertImageToLayerState();
+        const event = { detail: context };
+        const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', event);
+
+        layerState.canvas.dispatchEvent(strokeEvent);
+      }
+    }
+  }, [layerState.canvas, swipeState, prevSwipeRef]);
+
   React.useLayoutEffect(() => {
     if (isSelected) {
       if (swipeState.state === 'move') {
@@ -134,19 +142,15 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, width, 
           x: swipeState.x,
           y: swipeState.y,
         };
+      } else {
+        prevSwipeRef.current = { x: 0, y: 0 };
       }
     }
   }, [swipeState, isSelected, setCanvasStyle, prevSwipeRef]);
 
   React.useEffect(() => {
-    if (swipeState.state === 'done' && layerState.canvas && prevSwipeRef.current.x && prevSwipeRef.current.y) {
-      convertImageToLayerState();
-      prevSwipeRef.current = {
-        x: 0,
-        y: 0,
-      };
-    }
-  }, [swipeState.state, convertImageToLayerState, layerState.canvas]);
+    return () => convertImageToLayerState();
+  }, []);
 
   return (
     <SelectorCanvas ref={selectorRef} {...canvasStyles} isDisplay={isSelected} onClick={() => setIsSelected(true)} />
