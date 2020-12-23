@@ -160,9 +160,8 @@ interface SelectorCanvasProps {
 
 const SelectorCanvas = styled.canvas<SelectorCanvasProps>`
   position: absolute;
-  border-color: gray;
-  border-width: 0px;
-  border-style: solid;
+  border: 1px solid transparent;
+  box-sizing: content-box;
   z-index: 105;
 
   ${(props) => `
@@ -173,7 +172,7 @@ const SelectorCanvas = styled.canvas<SelectorCanvasProps>`
     ${
       props.isDisplay &&
       `
-      border-width: 1px;
+      border-color: gray;
       z-index: 95;
     `
     }
