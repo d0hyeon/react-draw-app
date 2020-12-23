@@ -120,7 +120,7 @@ const Draw: React.FC = () => {
       if (layerState.isLock) {
         return;
       }
-
+      restoredRef.current = [];
       const image = context.getImageData(0, 0, configState.width, configState.height);
       setHistory({
         layerId: currentLayerId,
