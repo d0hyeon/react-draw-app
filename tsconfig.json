@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": [
+      "WebWorker",
       "DOM",
       "DOM.Iterable",
       "ES2016.Array.Include",
@@ -32,7 +33,7 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
   ],
   "exclude": [
     "node_modules"
