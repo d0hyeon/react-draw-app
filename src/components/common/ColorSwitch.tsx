@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 import ColorButton from './ColorButton';
-import { Colors } from 'src/types/tool';
+import { Colors } from 'src/types/toolType';
 
 interface Props {
   colors: Colors;

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { toolConfigs } from 'src/constants/tools';
-import { tool } from 'src/atoms/tool';
+import { toolConfigs } from 'src/components/tools/config';
+import { tool } from 'src/atoms/toolState';
 import { useRecoilState } from 'recoil';
 
 const ToolNavigate = () => {

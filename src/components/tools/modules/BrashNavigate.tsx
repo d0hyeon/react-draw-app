@@ -1,10 +1,10 @@
 import React from 'react';
 import { css } from '@emotion/core';
 import { InputNumber } from 'antd';
-import { tool } from 'src/atoms/tool';
+import { tool } from 'src/atoms/toolState';
 import { useRecoilState } from 'recoil';
 
-const BrashNavigate = () => {
+export function BrashNavigate () {
   const [toolState, setToolState] = useRecoilState(tool);
   const onChangeCallback = React.useCallback(
     (value) => {
@@ -45,5 +45,3 @@ const BrashNavigate = () => {
     </dl>
   );
 };
-
-export default React.memo(BrashNavigate);

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Tool } from '../../types/tool';
-import { toolConfigs } from 'src/constants/tools';
+import { Tool } from '../../types/toolType';
+import { toolConfigs } from 'src/components/tools/config';
 import styled from '@emotion/styled';
 import ColorSwitch from 'src/components/common/ColorSwitch';
-import { tool } from 'src/atoms/tool';
+import { tool } from 'src/atoms/toolState';
 import { useRecoilState } from 'recoil';
 
 const ToolSide: React.FC = () => {

@@ -1,7 +1,8 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
-import { ToolComponentProps } from 'src/types/tool';
 import { StrokeEvent } from 'src/types/common';
+import { BrashNavigate } from './BrashNavigate';
+import { ToolComponentProps } from 'src/types/toolType';
 
 const DEFAULT_CONTEXT_PROPERTIES = {
   globalCompositeOperation: 'source-over',
@@ -12,7 +13,11 @@ declare global {
   interface CanvasRenderingContext2D extends StrokeEvent {}
 }
 
-const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerState, ...props }) => {
+interface Props extends ToolComponentProps {
+  globalCompositeOperation?: CanvasRenderingContext2D['globalCompositeOperation']
+}
+
+export function Brash ({ id, canvasRef, toolState, layerState, ...props }: Props) {
   const context = layerState.canvas?.getContext?.('2d') || null;
 
   const onMouseMove = React.useCallback(
@@ -114,7 +119,6 @@ const Brash: React.FC<ToolComponentProps> = ({ id, canvasRef, toolState, layerSt
   return null;
 };
 
-export const key = 'brash';
-export const icon = 'https://img.icons8.com/ios-filled/344/ffffff/marker-pen.png';
-
-export default React.memo(Brash);
+Brash.key = 'brash';
+Brash.icon = 'https://img.icons8.com/ios-filled/344/ffffff/marker-pen.png';
+Brash.Navigate = BrashNavigate;

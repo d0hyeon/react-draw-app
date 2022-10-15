@@ -55,8 +55,8 @@ const ConfigForm: React.FC<Props> = ({
         <Button type="primary" htmlType="submit">시작하기</Button>
       </Form>
     </FormWrapper>
-  )
-}
+  );
+};
 
 export default React.memo(ConfigForm);
 

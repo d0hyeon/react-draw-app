@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { useRecoilState } from 'recoil';
 import { ID } from 'src/types/common';
-import { layerEntity } from 'src/atoms/layer';
+import { layerEntity } from 'src/atoms/layerState';
 import { SerializedStyles } from '@emotion/core';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   customCss?: SerializedStyles;
 }
 
-const Canvas: React.FC<Props> = ({ id, isCurrent, width, height, customCss }) => {
+const ViewCanvas: React.FC<Props> = ({ id, isCurrent, width, height, customCss }) => {
   const [layerState, setLayerState] = useRecoilState(layerEntity(id));
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
@@ -47,5 +47,5 @@ const CanvasWrapper = styled.div<StyledProps>`
   }
 `;
 
-Canvas.displayName = 'Canvas';
-export default React.memo(Canvas);
+ViewCanvas.displayName = 'ViewCanvas';
+export default React.memo(ViewCanvas);

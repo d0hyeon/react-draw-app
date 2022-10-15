@@ -1,10 +1,9 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import Draw from './components/Draw';
-import withContextProvider from './hoc/withContextProvider';
-import ConfigForm from './components/common/ConfigForm';
-import { RecoilRoot, useRecoilState } from 'recoil';
-import { configSelector } from './atoms/config';
+import DrawApp from './components/DrawApp';
+import SettingForm from './components/setting/SettingForm';
+import { useRecoilState } from 'recoil';
+import { configSelector } from './atoms/configState';
 
 function App() {
   const [configState, setConfigState] = useRecoilState(configSelector);
@@ -18,15 +17,17 @@ function App() {
   return (
     <>
       {isInitalized ? (
-        <Draw />
+        <DrawApp />
       ) : (
         <FormPanel>
-          <ConfigForm initialValue={configState} onSuccess={onSubmitCallback} />
+          <SettingForm initialValue={configState} onSuccess={onSubmitCallback} />
         </FormPanel>
       )}
     </>
   );
 }
+
+export default App;
 
 const FormPanel = styled.div`
   position: fixed;
@@ -34,5 +35,3 @@ const FormPanel = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
 `;
-
-export default withContextProvider(App, RecoilRoot);

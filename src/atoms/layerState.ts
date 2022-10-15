@@ -1,5 +1,5 @@
-import { atomFamily, atom } from 'recoil';
 import { nanoid } from 'nanoid';
+import { atom, atomFamily } from 'recoil';
 import { ID } from 'src/types/common';
 
 export interface ContextState {
@@ -46,6 +46,11 @@ const INITIAL_LAYER_STATE: Layer = {
   layers: [DEFAULT_LAYER_ID],
 };
 
+export const layerConfig = atom<Layer>({
+  key: 'layerConfig',
+  default: INITIAL_LAYER_STATE,
+});
+
 export const layerEntity = atomFamily<LayerEntity, ID>({
   key: 'layerEntity',
   default: (id) => {
@@ -60,7 +65,4 @@ export const layerEntity = atomFamily<LayerEntity, ID>({
   },
 });
 
-export const layer = atom<Layer>({
-  key: 'layer',
-  default: INITIAL_LAYER_STATE,
-});
+

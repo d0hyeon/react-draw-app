@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useRecoilState } from 'recoil';
-import { layer, layerEntity } from 'src/atoms/layer';
+import { layerConfig, layerEntity } from 'src/atoms/layerState';
 import { ID } from 'src/types/common';
 import { nanoid } from 'nanoid';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
@@ -64,7 +64,7 @@ const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelec
 const LayerItem = React.memo(_LayerItem);
 
 const LayerNavigate = () => {
-  const [{ currentLayerId, layers }, setLayer] = useRecoilState(layer);
+  const [{ currentLayerId, layers }, setLayer] = useRecoilState(layerConfig);
   const layerSelectHandler = React.useCallback((layerId) => {
     setLayer((prev) => ({
       ...prev,

@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useRecoilValue } from 'recoil';
-import { layer, layerEntity } from 'src/atoms/layer';
-import { tool } from 'src/atoms/tool';
-import { toolConfigs } from 'src/constants/tools';
-import { configSelector } from 'src/atoms/config';
+import { layerConfig, layerEntity } from 'src/atoms/layerState';
+import { tool } from 'src/atoms/toolState';
+import { toolConfigs } from 'src/components/tools/config';
+import { configSelector } from 'src/atoms/configState';
 
-const LasterCanvas = () => {
-  const { currentLayerId } = useRecoilValue(layer);
+const DrawCanvas = () => {
+  const { currentLayerId } = useRecoilValue(layerConfig);
   const toolState = useRecoilValue(tool);
   const configState = useRecoilValue(configSelector);
   const layerState = useRecoilValue(layerEntity(currentLayerId));
@@ -31,7 +31,7 @@ const LasterCanvas = () => {
   );
 };
 
-export default LasterCanvas;
+export default DrawCanvas;
 
 const StyledCanvas = styled.canvas`
   position: absolute;

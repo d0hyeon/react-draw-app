@@ -1,19 +1,23 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import useSwipe from '@odnh/use-swipe';
-import { ToolComponentProps } from 'src/types/tool';
-import useClickOuter from 'src/hooks/useClickOuter';
+import React from 'react';
+import { useClickOuter } from 'src/hooks/useClickOuter';
+import { useShortKey } from 'src/hooks/useShortKey';
+import WorkerBuilder from 'src/workers/WorkerBuilder';
 import { StrokeEvent } from 'src/types/common';
-import { useKeyPress } from '@odnh/use-key-press';
+import ImagerWorker, { MessagePayload, MessageResponse } from 'src/workers/ImageWorker';
+import { ToolComponentProps } from 'src/types/toolType';
 
-const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolState, width, height }) => {
+const worker = WorkerBuilder.fromModule<MessagePayload, MessageResponse>(ImagerWorker);
+
+export function Selector ({ canvasRef, layerState, toolState, width, height }: ToolComponentProps) {
   const [isSelected, setIsSelected] = React.useState<boolean>(false);
   const prevSwipeRef = React.useRef({ x: 0, y: 0 });
   const divRef = React.useRef(null);
   const isClickedOuter = useClickOuter(divRef);
   const swipeState = useSwipe(canvasRef);
-  const pressingKeyCodes = useKeyPress();
   const context = layerState.canvas?.getContext?.('2d') ?? null;
+  
 
   const { strokeX, strokeY } = React.useMemo(() => {
     const { strokeX = 0, strokeY = 0 } = layerState.contextState;
@@ -26,6 +30,26 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolSta
     width: layerState.contextState.strokeWidth,
     height: layerState.contextState.strokeHeight,
   }));
+
+  React.useEffect(() => {
+    if(context) {
+        worker.postMessage({
+          type: ImagerWorker.TYPES.extractCoordinate,
+          data: context.getImageData(0, 0, height,width)
+        });
+        worker.addEventListener('message', ({ data: { data } }) => {
+          if(data) {
+            const { sx, sw, sy, sh } = data;
+            setDivProps({
+              x: sx - 5,
+              y: sy - 5,
+              width: sw - sx + 10 + context.lineWidth,
+              height: sh - sy + 10 + context.lineWidth,
+            });
+          }
+        });
+    }
+  }, [context, width, height]);
 
   React.useEffect(() => {
     setDivProps((prev) => ({
@@ -41,31 +65,29 @@ const Selector: React.FC<ToolComponentProps> = ({ canvasRef, layerState, toolSta
     }
   }, [isClickedOuter]);
 
-  React.useEffect(() => {
-    if (pressingKeyCodes.includes('Delete') && isSelected) {
-      if (pressingKeyCodes.length === 1) {
-        context.globalCompositeOperation = 'destination-out';
-        context.fillRect(0, 0, width, height);
-        const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
-          detail: {
-            strokeX: 0,
-            strokeY: 0,
-            strokeHeight: 0,
-            strokeWidth: 0,
-          },
-        });
-        prevSwipeRef.current = { x: 0, y: 0 };
-        const contextEvent = new CustomEvent('contextChange', {
-          detail: context,
-        });
+  useShortKey({ key: 'Backspace' }, () => {
+    if(isSelected) {
+      context.globalCompositeOperation = 'destination-out';
+      context.fillRect(0, 0, width, height);
+      const strokeEvent = new CustomEvent<StrokeEvent>('strokeChange', {
+        detail: {
+          strokeX: 0,
+          strokeY: 0,
+          strokeHeight: 0,
+          strokeWidth: 0,
+        },
+      });
+      prevSwipeRef.current = { x: 0, y: 0 };
+      const contextEvent = new CustomEvent('contextChange', {
+        detail: context,
+      });
 
-        layerState.canvas.dispatchEvent(strokeEvent);
-        layerState.canvas.dispatchEvent(contextEvent);
-        setDivProps((prev) => ({ ...prev, width: 0, height: 0 }));
-        setIsSelected(false);
-      }
+      layerState.canvas.dispatchEvent(strokeEvent);
+      layerState.canvas.dispatchEvent(contextEvent);
+      setDivProps((prev) => ({ ...prev, width: 0, height: 0 }));
+      setIsSelected(false);
     }
-  }, [pressingKeyCodes, layerState.canvas, isSelected, width, height]);
+  });
 
   React.useLayoutEffect(() => {
     if (isSelected) {
@@ -117,7 +139,7 @@ const SelectDiv = styled.div<SelectDivProps>`
   position: absolute;
   border-color: gray;
   border-width: 0px;
-  border-style: solid;
+  border-style: dotted;
   z-index: 105;
 
   ${(props) => `
@@ -128,13 +150,13 @@ const SelectDiv = styled.div<SelectDivProps>`
     ${
       props.isDisplay &&
       `
-      border-width: 1px;
+      border-width: 2px;
       z-index: 95;
     `
     }
   `}
 `;
 
-export const key = 'selector';
-export const icon = 'https://img.icons8.com/android/344/ffffff/cursor.png';
-export default React.memo(Selector);
+
+Selector.key = 'selector';
+Selector.icon = 'https://img.icons8.com/android/344/ffffff/cursor.png';

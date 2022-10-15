@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import { Global, css } from '@emotion/core';
 import 'antd/dist/antd.css';
+import { RecoilRoot } from 'recoil';
 
 const baseCss = css`
   * {
@@ -124,7 +125,9 @@ const baseCss = css`
 ReactDOM.render(
   <React.StrictMode>
     <Global styles={baseCss} />
-    <App />
+    <RecoilRoot>
+      <App />
+    </RecoilRoot>    
   </React.StrictMode>,
   document.getElementById('root'),
 );

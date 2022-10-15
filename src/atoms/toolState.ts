@@ -1,6 +1,6 @@
 import { atom } from 'recoil';
-import { Colors } from 'src/types/tool';
-import { ToolKeys } from 'src/constants/tools';
+import { Colors } from 'src/types/toolType';
+import { ToolKeys } from 'src/components/tools/config';
 
 export interface ToolState {
   color: string;

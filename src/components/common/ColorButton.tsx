@@ -1,7 +1,7 @@
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import styled from '@emotion/styled';
-import useClickOuter from 'src/hooks/useClickOuter';
+// import { useClickOuter } from 'src/hooks/useClickOuter';
 
 interface Props {
   className?: string;
@@ -22,7 +22,7 @@ const ColorButton: React.FC<Props> = ({
   const [currentColor, setCurrentColor] = React.useState(
     color || defaultColor || '#000',
   );
-  const isClickedOuteSide = useClickOuter(wrapperRef);
+  const isClickedOuteSide = false;
   const [isPickerDisplay, setIsPickerDisplay] = React.useState<boolean>(false);
 
   const onChange = React.useCallback(

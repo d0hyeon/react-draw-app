@@ -1,7 +1,7 @@
 import { ComponentType } from 'react';
-import { LayerEntity } from 'src/atoms/layer';
+import { LayerEntity } from 'src/atoms/layerState';
 import { ID } from './common';
-import { ToolState } from './../atoms/tool';
+import { ToolState } from '../atoms/toolState';
 
 interface ExtendsComponentProps {
   id: ID;
