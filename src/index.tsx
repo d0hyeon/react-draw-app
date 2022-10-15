@@ -1,9 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOM from 'react-dom/client';
 import App from './App';
 import { Global, css } from '@emotion/core';
 import 'antd/dist/antd.css';
 import { RecoilRoot } from 'recoil';
+
+
 
 const baseCss = css`
   * {
@@ -122,12 +124,12 @@ const baseCss = css`
   }
 `;
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
     <Global styles={baseCss} />
     <RecoilRoot>
       <App />
     </RecoilRoot>    
-  </React.StrictMode>,
-  document.getElementById('root'),
+  </React.StrictMode>
 );
