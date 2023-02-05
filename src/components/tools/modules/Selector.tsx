@@ -1,14 +1,12 @@
 import styled from '@emotion/styled';
 import useSwipe from '@odnh/use-swipe';
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useClickOuter } from 'src/hooks/useClickOuter';
 import { useShortKey } from 'src/hooks/useShortKey';
-import WorkerBuilder from 'src/workers/WorkerBuilder';
-import { StrokeEvent } from 'src/types/common';
-import ImagerWorker, { MessagePayload, MessageResponse } from 'src/workers/ImageWorker';
+import * as ImageDataWorker from 'src/workers/ImageWorker';
 import { ToolComponentProps } from 'src/types/toolType';
-
-const worker = WorkerBuilder.fromModule<MessagePayload, MessageResponse>(ImagerWorker);
+import { WorkerUtilKit } from 'src/lib/WorkerUtilKit';
+import { StrokeEvent } from 'src/lib/StorkeEvent';
 
 export function Selector ({ canvasRef, layerState, toolState, width, height }: ToolComponentProps) {
   const [isSelected, setIsSelected] = React.useState<boolean>(false);
@@ -31,25 +29,32 @@ export function Selector ({ canvasRef, layerState, toolState, width, height }: T
     height: layerState.contextState.strokeHeight,
   }));
 
+  const CoordinateWorker = useMemo(() => {
+    return WorkerUtilKit.fromModule(ImageDataWorker.getRectCoordinate);
+  }, []);
+  
+  useEffect(() => {
+    CoordinateWorker.subscribe(data => {
+      const { sx, sw, sy, sh } = data;
+      
+      setDivProps({
+        x: sx - 5,
+        y: sy - 5,
+        width: sw - sx + 10 + context.lineWidth,
+        height: sh - sy + 10 + context.lineWidth,
+      });
+    });
+
+    return () => {
+      CoordinateWorker.terminate();
+    };
+  }, [CoordinateWorker, setDivProps]);
+
   React.useEffect(() => {
     if(context) {
-        worker.postMessage({
-          type: ImagerWorker.TYPES.extractCoordinate,
-          data: context.getImageData(0, 0, height,width)
-        });
-        worker.addEventListener('message', ({ data: { data } }) => {
-          if(data) {
-            const { sx, sw, sy, sh } = data;
-            setDivProps({
-              x: sx - 5,
-              y: sy - 5,
-              width: sw - sx + 10 + context.lineWidth,
-              height: sh - sy + 10 + context.lineWidth,
-            });
-          }
-        });
+      CoordinateWorker.request(context.getImageData(0, 0, height,width));
     }
-  }, [context, width, height]);
+  }, [context, CoordinateWorker]);
 
   React.useEffect(() => {
     setDivProps((prev) => ({
