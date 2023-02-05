@@ -15,9 +15,3 @@ export type ActionPayload<P> = {
 
 export type Reducer<S> = (state: S, payload: ActionPayload<S>) => S;
 
-export interface StrokeEvent {
-  strokeX: number;
-  strokeY: number;
-  strokeWidth: number;
-  strokeHeight: number;
-}

@@ -1,8 +1,8 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
-import { StrokeEvent } from 'src/types/common';
 import { BrashNavigate } from './BrashNavigate';
 import { ToolComponentProps } from 'src/types/toolType';
+import { createStrokeEvent, StrokeEvent } from 'src/lib/StorkeEvent';
 
 const DEFAULT_CONTEXT_PROPERTIES = {
   globalCompositeOperation: 'source-over',
@@ -43,13 +43,11 @@ export function Brash ({ id, canvasRef, toolState, layerState, ...props }: Props
           context.strokeHeight = offsetY - strokeY + lineWidth;
         }
       }
-      const strokeEvent = new CustomEvent<Partial<CanvasRenderingContext2D>>('strokeChange', {
-        detail: {
-          strokeX: context.strokeX,
-          strokeY: context.strokeY,
-          strokeWidth: context.strokeWidth,
-          strokeHeight: context.strokeHeight,
-        },
+      const strokeEvent = createStrokeEvent({
+        strokeX: context.strokeX,
+        strokeY: context.strokeY,
+        strokeWidth: context.strokeWidth,
+        strokeHeight: context.strokeHeight,
       });
       layerState.canvas.dispatchEvent(strokeEvent);
 
