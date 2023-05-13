@@ -2,16 +2,16 @@ import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 import React from 'react';
 import { useRecoilState } from 'recoil';
-import { configSelector } from 'src/atoms/configState';
-import { layerConfig, layerEntity } from 'src/atoms/layerState';
+import { configSelector } from 'src/features/config/configState';
+import { layerConfig, layerEntity } from 'src/features/drawing/layer/layerState';
 import { HEADER_HEIGHT } from 'src/constants/layout';
-import { useRestoreContext } from 'src/hooks/useRestoreContext';
-import ToggleInput from './common/ToggleInput';
-import DraweCanvas from './DrawCanvas';
-import LayerNavigate from './layout/LayerNavigate';
-import ToolNavigate from './layout/ToolNavigate';
-import ToolOptionBar from './layout/ToolOptionBar';
-import Canvas from './ViewCanvas';
+import { useRestoreContext } from 'src/features/drawing/useRestoreContext';
+import ToggleInput from '../../components/EditableText';
+import { Drawer } from './canvas/Drawer';
+import { LayerNavigation } from './layer/LayerNavigation';
+import { ToolNavigation } from './tools/ToolNavigation';
+import ToolOptionBar from './tools/ToolOptionBar';
+import { Viewer } from './canvas/Viewer';
 
 const DrawApp: React.FC = () => {
   const [configState, setConfigState] = useRecoilState(configSelector);
@@ -58,27 +58,27 @@ const DrawApp: React.FC = () => {
       <WrapperDiv>
         <ToolOptionBar />
         <div className="layout">
-          <ToolNavigate />
+          <ToolNavigation />
           <main>
             <CanvasWrapperDiv width={configState.width} height={configState.height}>
               <div>
-                <DraweCanvas />
+                <Drawer />
                 {layers.map((layerId, idx) => (
-                  <Canvas
+                  <Viewer
                     key={layerId}
                     id={layerId}
                     isCurrent={layerId === currentLayerId}
                     width={configState.width}
                     height={configState.height}
-                    customCss={css`
-                      z-index: ${layers.length - idx};
-                    `}
+                    css={css({
+                      zIndex: layers.length - idx,
+                    })}
                   />
                 ))}
               </div>
             </CanvasWrapperDiv>
           </main>
-          <LayerNavigate />
+          <LayerNavigation />
         </div>
       </WrapperDiv>
     </>

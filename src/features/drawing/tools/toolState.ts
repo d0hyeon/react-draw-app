@@ -1,22 +1,22 @@
 import { atom } from 'recoil';
-import { Colors } from 'src/types/toolType';
-import { ToolKeys } from 'src/components/tools/config';
+import { Colors } from 'src/features/drawing/tools/toolType';
+import { ToolKeys } from 'src/features/drawing/tools/modules/config';
 
 export interface ToolState {
   color: string;
   colors: Colors;
-  tool: ToolKeys;
+  activeTool: ToolKeys;
   lineWidth: number;
 }
 
 const INITIAL_STATE: ToolState = {
   colors: ['#000', '#fff'],
-  tool: 'brash',
+  activeTool: 'brash',
   color: '#000',
   lineWidth: 3,
 };
 
-export const tool = atom<ToolState>({
+export const toolState = atom<ToolState>({
   key: 'tool',
   default: INITIAL_STATE,
 });

@@ -1,15 +1,14 @@
 import { nanoid } from "nanoid";
 import { ID } from "src/types/common";
+import { TypedMessageEvent, TypedWorker } from "./TypedWorker";
 
-interface TypedMessageEvent<Data = any> extends MessageEvent {
-  data: Data;
-}
-export class WorkerUtilKit<Payload, Response> {
+
+export class WorkerBuilder<Payload, Response> {
   static fromModule<Payload, Response>(fn: (data: Payload) => Response) {
     const code = createWorkerGateway(fn).toString();
     const blob = new Blob([`(${code})()`]);
 
-    return new WorkerUtilKit<Parameters<typeof fn>[0], ReturnType<typeof fn>>(URL.createObjectURL(blob));
+    return new WorkerBuilder<Parameters<typeof fn>[0], ReturnType<typeof fn>>(URL.createObjectURL(blob));
   }
   
   worker: TypedWorker<Payload, Response>;
@@ -29,11 +28,10 @@ export class WorkerUtilKit<Payload, Response> {
   }
 
   request<P = Payload, R = Response>(payload: P) {
-    return new Promise((resolve) => {
+    return new Promise((resolve: (response: R) => void) => {
       const id = nanoid();
-      const onMessage = (message: TypedMessageEvent<R & { id: ID }>) => {
-        const { id: _id, ...data } = message.data;
-        if(id === _id) {
+      const onMessage = ({ data }: TypedMessageEvent<R & { id: ID }>) => {
+        if(id === data.id) {
           resolve(data);
 
           this.worker.removeEventListener('message', onMessage);
@@ -48,22 +46,6 @@ export class WorkerUtilKit<Payload, Response> {
     this.worker.terminate();
   }
 }
-
-
-class TypedWorker<Payload, Response> extends Worker {
-
-  postMessage<T = Payload>(payload: T) {
-    super.postMessage(payload);
-  }
-  
-  addEventListener<R = Response>(
-    type: 'message' | 'error' | 'messageerror',
-    observer: (this: Worker, event: TypedMessageEvent<R>) => void,
-  ) {
-    super.addEventListener(type, observer);
-  }
-}
-
 
 function createWorkerGateway<Payload, Response>(fn: (payload: Payload) => Response) {
   return () => {

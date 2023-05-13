@@ -6,7 +6,7 @@ interface DoInputProps {
   updateValue: (value: string) => void;
 }
 
-const ToggleInput: React.FC<DoInputProps> = ({ updateValue, defaultValue }) => {
+const EditableText: React.FC<DoInputProps> = ({ updateValue, defaultValue }) => {
   const [isModify, setIsModify] = React.useState<boolean>(false);
   const [inputValue, setInputValue] = React.useState<string>(
     defaultValue ?? '',
@@ -65,5 +65,5 @@ const ToggleInput: React.FC<DoInputProps> = ({ updateValue, defaultValue }) => {
   );
 };
 
-ToggleInput.displayName = 'ToggleInput';
-export default React.memo(ToggleInput);
+EditableText.displayName = 'EditableText';
+export default React.memo(EditableText);

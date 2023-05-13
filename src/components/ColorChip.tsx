@@ -1,7 +1,7 @@
 import React from 'react';
 import { SketchPicker } from 'react-color';
 import styled from '@emotion/styled';
-// import { useClickOuter } from 'src/hooks/useClickOuter';
+import { useClickOuter } from 'src/hooks/useClickOuter';
 
 interface Props {
   className?: string;
@@ -11,18 +11,16 @@ interface Props {
   onClickButton?: () => void | boolean;
 }
 
-const ColorButton: React.FC<Props> = ({
+const ColorChip: React.FC<Props> = ({
   className = '',
   color,
   defaultColor,
   onChangeColor,
   onClickButton,
 }) => {
-  const wrapperRef = React.useRef(null);
   const [currentColor, setCurrentColor] = React.useState(
     color || defaultColor || '#000',
   );
-  const isClickedOuteSide = false;
   const [isPickerDisplay, setIsPickerDisplay] = React.useState<boolean>(false);
 
   const onChange = React.useCallback(
@@ -44,11 +42,10 @@ const ColorButton: React.FC<Props> = ({
     setIsPickerDisplay((curr) => !curr);
   }, [onClickButton]);
 
-  React.useEffect(() => {
-    if (isClickedOuteSide) {
-      setIsPickerDisplay(false);
-    }
-  }, [isClickedOuteSide, currentColor, onChangeColor]);
+  const wrapperRef = React.useRef(null);
+  useClickOuter(wrapperRef, () => {
+    setIsPickerDisplay(false);
+  });
   return (
     <Wrapper ref={wrapperRef} className={className}>
       <StyledColorButton color={currentColor} onClick={onClickColorChip}>
@@ -67,7 +64,7 @@ const ColorButton: React.FC<Props> = ({
   );
 };
 
-export default React.memo(ColorButton);
+export default React.memo(ColorChip);
 
 const Wrapper = styled.div`
   position: relative;

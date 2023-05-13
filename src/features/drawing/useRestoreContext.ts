@@ -2,12 +2,12 @@
 import { useHistoryState } from '@odnh/use-history-state';
 import { useCallback, useEffect, useRef } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { configSelector } from '../atoms/configState';
-import { ContextState, layerConfig } from '../atoms/layerState';
-import { ID } from '../types/common';
-import { useInterval } from './useInterval';
-import { useLayer } from './useLayer';
-import { useShortKey } from './useShortKey';
+import { configSelector } from '../config/configState';
+import { ContextState, layerConfig } from './layer/layerState';
+import { ID } from '../../types/common';
+import { useInterval } from '../../hooks/useInterval';
+import { useLayer } from './layer/useLayer';
+import { useShortKey } from '../../hooks/useShortKey';
 
 type HistoryType = {
   layerId: ID;

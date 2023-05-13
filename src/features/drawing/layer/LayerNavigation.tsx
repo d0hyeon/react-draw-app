@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useRecoilState } from 'recoil';
-import { layerConfig, layerEntity } from 'src/atoms/layerState';
+import { layerConfig, layerEntity } from 'src/features/drawing/layer/layerState';
 import { ID } from 'src/types/common';
 import { nanoid } from 'nanoid';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import ToggleInput from '../common/ToggleInput';
+import EditableText from 'src/components/EditableText';
 
 interface LayerItemProps {
   id: ID;
@@ -16,7 +16,7 @@ interface LayerItemProps {
 
 const DEFAULT_CANVAS_BACKGROUND = 'https://pixlr.com/img/misc/square-bg.png';
 
-const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelect }) => {
+function LayerItem({ id, isCurrent, onDelete, onSelect }: LayerItemProps) {
   const [layer, setLayer] = useRecoilState(layerEntity(id));
 
   const canvas = layer.canvas;
@@ -43,7 +43,7 @@ const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelec
           <img src={imageSrc} title={layer.title} onError={onErrorImage} />
         </ThunbmailDiv>
         <figcaption>
-          <ToggleInput defaultValue={layer.title} updateValue={onChangeTitle} />
+          <EditableText defaultValue={layer.title} updateValue={onChangeTitle} />
           <div>
             <button
               onClick={(e) => {
@@ -61,9 +61,7 @@ const _LayerItem: React.FC<LayerItemProps> = ({ id, isCurrent, onDelete, onSelec
   );
 };
 
-const LayerItem = React.memo(_LayerItem);
-
-const LayerNavigate = () => {
+export function LayerNavigation() {
   const [{ currentLayerId, layers }, setLayer] = useRecoilState(layerConfig);
   const layerSelectHandler = React.useCallback((layerId) => {
     setLayer((prev) => ({
@@ -127,8 +125,6 @@ const LayerNavigate = () => {
     </LayerWrapperNav>
   );
 };
-
-export default LayerNavigate;
 
 const LayerWrapperNav = styled.aside`
   height: 100%;

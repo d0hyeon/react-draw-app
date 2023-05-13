@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { toolConfigs } from 'src/components/tools/config';
-import { tool } from 'src/atoms/toolState';
+import { toolConfigs } from 'src/features/drawing/tools/modules/config';
+import { toolState } from 'src/features/drawing/tools/toolState';
 import { useRecoilState } from 'recoil';
 
 const ToolNavigate = () => {
-  const [toolState] = useRecoilState(tool);
-  const ToolComponent = toolConfigs?.[toolState.tool]?.Navigate;
+  const [tool] = useRecoilState(toolState);
+  const ToolComponent = toolConfigs?.[tool.activeTool]?.Navigate;
 
   if (!ToolComponent) {
     return null;

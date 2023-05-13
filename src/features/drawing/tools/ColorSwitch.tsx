@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from '@emotion/styled';
 
-import ColorButton from './ColorButton';
-import { Colors } from 'src/types/toolType';
+import { Colors } from 'src/features/drawing/tools/toolType';
+import ColorChip from '../../../components/ColorChip';
 
 interface Props {
   colors: Colors;
@@ -27,7 +27,7 @@ const ColorSwitch: React.FC<Props> = ({ colors: _colors, onChangeColors }) => {
   return (
     <ColorSwitchWrapper>
       {colors.map((color, idx) => (
-        <ColorButton
+        <ColorChip
           className={activeIdx === idx ? 'front' : ''}
           key={idx}
           color={color}

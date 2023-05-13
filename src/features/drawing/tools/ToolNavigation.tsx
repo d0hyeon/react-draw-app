@@ -1,15 +1,15 @@
 import React from 'react';
-import { Tool } from '../../types/toolType';
-import { toolConfigs } from 'src/components/tools/config';
+import { Tool } from './toolType';
+import { toolConfigs } from 'src/features/drawing/tools/modules/config';
 import styled from '@emotion/styled';
-import ColorSwitch from 'src/components/common/ColorSwitch';
-import { tool } from 'src/atoms/toolState';
+import ColorSwitch from 'src/features/drawing/tools/ColorSwitch';
+import { toolState } from 'src/features/drawing/tools/toolState';
 import { useRecoilState } from 'recoil';
 
-const ToolSide: React.FC = () => {
-  const [toolState, setToolState] = useRecoilState(tool);
+export function ToolNavigation() {
+  const [tool, setTool] = useRecoilState(toolState);
   const onChangeColor = React.useCallback((activeColor, colors) => {
-    setToolState((prev) => ({
+    setTool(prev => ({
       ...prev,
       color: activeColor,
       colors,
@@ -20,20 +20,25 @@ const ToolSide: React.FC = () => {
     <Side>
       <ul>
         {Object.entries(toolConfigs).map(([key, value]) => {
-          const isActive = key === toolState.tool;
+          const isActive = key === tool.activeTool;
 
           return (
             <li
               key={key}
               className={isActive ? 'active' : ''}
-              onClick={() => setToolState((prev) => ({ ...prev, tool: key }))}
+              onClick={() => {
+                setTool(curr => ({
+                  ...curr,
+                  activeTool: key,
+                }));
+              }}
             >
               <button>{(value as Tool)?.icon ? <img src={value.icon} title={key} /> : key.substr(0, 1)}</button>
             </li>
           );
         })}
       </ul>
-      <ColorSwitch colors={toolState.colors} onChangeColors={onChangeColor} />
+      <ColorSwitch colors={tool.colors} onChangeColors={onChangeColor} />
     </Side>
   );
 };
@@ -72,4 +77,3 @@ const Side = styled.aside`
   }
 `;
 
-export default ToolSide;

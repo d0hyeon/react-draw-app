@@ -1,7 +1,7 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
-import { BrashNavigate } from './BrashNavigate';
-import { ToolComponentProps } from 'src/types/toolType';
+import { BrashNavigation } from './BrashNavigation';
+import { ToolComponentProps } from 'src/features/drawing/tools/toolType';
 import { createStrokeEvent, StrokeEvent } from 'src/lib/StorkeEvent';
 
 const DEFAULT_CONTEXT_PROPERTIES = {
@@ -119,4 +119,4 @@ export function Brash ({ id, canvasRef, toolState, layerState, ...props }: Props
 
 Brash.key = 'brash';
 Brash.icon = 'https://img.icons8.com/ios-filled/344/ffffff/marker-pen.png';
-Brash.Navigate = BrashNavigate;
+Brash.Navigate = BrashNavigation;

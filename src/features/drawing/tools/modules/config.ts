@@ -1,7 +1,7 @@
-import { Tool } from 'src/types/toolType';
-import { Brash } from './modules/Brash';
-import { Selector } from './modules/Selector';
-import { Remover } from './modules/Remover';
+import { Tool } from 'src/features/drawing/tools/toolType';
+import { Brash } from './brash/Brash';
+import { Selector } from './Selector';
+import { Remover } from './Remover';
 
 export type Tools = {
   [key: string]: Tool;

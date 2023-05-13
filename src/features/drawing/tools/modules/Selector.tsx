@@ -3,16 +3,14 @@ import useSwipe from '@odnh/use-swipe';
 import React, { useEffect, useMemo } from 'react';
 import { useClickOuter } from 'src/hooks/useClickOuter';
 import { useShortKey } from 'src/hooks/useShortKey';
-import * as ImageDataWorker from 'src/workers/ImageWorker';
-import { ToolComponentProps } from 'src/types/toolType';
-import { WorkerUtilKit } from 'src/lib/WorkerUtilKit';
+import { getRectCoordinate } from 'src/utils/getRectCoordinate';
+import { ToolComponentProps } from 'src/features/drawing/tools/toolType';
+import { WorkerBuilder } from 'src/lib/WorkerBuilder';
 import { StrokeEvent } from 'src/lib/StorkeEvent';
 
 export function Selector ({ canvasRef, layerState, toolState, width, height }: ToolComponentProps) {
   const [isSelected, setIsSelected] = React.useState<boolean>(false);
   const prevSwipeRef = React.useRef({ x: 0, y: 0 });
-  const divRef = React.useRef(null);
-  const isClickedOuter = useClickOuter(divRef);
   const swipeState = useSwipe(canvasRef);
   const context = layerState.canvas?.getContext?.('2d') ?? null;
   
@@ -22,7 +20,7 @@ export function Selector ({ canvasRef, layerState, toolState, width, height }: T
     return { strokeX, strokeY };
   }, [layerState.contextState]);
 
-  const [divProps, setDivProps] = React.useState(() => ({
+  const [selectorCoordinate, setSelectorCoordinate] = React.useState(() => ({
     x: strokeY,
     y: strokeY,
     width: layerState.contextState.strokeWidth,
@@ -30,45 +28,39 @@ export function Selector ({ canvasRef, layerState, toolState, width, height }: T
   }));
 
   const CoordinateWorker = useMemo(() => {
-    return WorkerUtilKit.fromModule(ImageDataWorker.getRectCoordinate);
+    return WorkerBuilder.fromModule(getRectCoordinate);
   }, []);
-  
+
   useEffect(() => {
-    CoordinateWorker.subscribe(data => {
+    async function updateCoordinateByContext () {
+      const data = await CoordinateWorker.request(context.getImageData(0, 0, height,width));
       const { sx, sw, sy, sh } = data;
       
-      setDivProps({
+      setSelectorCoordinate({
         x: sx - 5,
         y: sy - 5,
         width: sw - sx + 10 + context.lineWidth,
         height: sh - sy + 10 + context.lineWidth,
-      });
-    });
+      });  
+    }
 
-    return () => {
-      CoordinateWorker.terminate();
-    };
-  }, [CoordinateWorker, setDivProps]);
-
-  React.useEffect(() => {
     if(context) {
-      CoordinateWorker.request(context.getImageData(0, 0, height,width));
+      updateCoordinateByContext();
     }
   }, [context, CoordinateWorker]);
 
-  React.useEffect(() => {
-    setDivProps((prev) => ({
+  useEffect(() => {
+    setSelectorCoordinate((prev) => ({
       ...prev,
       x: strokeX,
       y: strokeY,
     }));
   }, [strokeX, strokeY]);
 
-  React.useEffect(() => {
-    if (isClickedOuter && isSelected) {
-      setIsSelected(false);
-    }
-  }, [isClickedOuter]);
+  const selectorRef = React.useRef(null);
+  useClickOuter(selectorRef, () => {
+    setIsSelected(false);
+  });
 
   useShortKey({ key: 'Backspace' }, () => {
     if(isSelected) {
@@ -89,7 +81,7 @@ export function Selector ({ canvasRef, layerState, toolState, width, height }: T
 
       layerState.canvas.dispatchEvent(strokeEvent);
       layerState.canvas.dispatchEvent(contextEvent);
-      setDivProps((prev) => ({ ...prev, width: 0, height: 0 }));
+      setSelectorCoordinate((prev) => ({ ...prev, width: 0, height: 0 }));
       setIsSelected(false);
     }
   });
@@ -111,7 +103,7 @@ export function Selector ({ canvasRef, layerState, toolState, width, height }: T
 
         context.strokeX = context.strokeX + diffX;
         context.strokeY = context.strokeY + diffY;
-        setDivProps((prev) => ({
+        setSelectorCoordinate((prev) => ({
           ...prev,
           x: prev.x + diffX,
           y: prev.y + diffY,
@@ -129,7 +121,14 @@ export function Selector ({ canvasRef, layerState, toolState, width, height }: T
     }
   }, [swipeState, isSelected, strokeX, strokeY, toolState, width, height]);
 
-  return <SelectDiv ref={divRef} {...divProps} isDisplay={isSelected} onClick={() => setIsSelected(true)} />;
+  return (
+    <SelectDiv 
+      ref={selectorRef} 
+      isDisplay={isSelected} 
+      onClick={() => setIsSelected(true)} 
+      {...selectorCoordinate} 
+    />
+  );
 };
 
 interface SelectDivProps {

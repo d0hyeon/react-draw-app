@@ -1,5 +1,5 @@
-import { ToolComponentProps } from "src/types/toolType";
-import { Brash } from "./Brash";
+import { ToolComponentProps } from "src/features/drawing/tools/toolType";
+import { Brash } from "./brash/Brash";
 
 
 export function Remover (props: ToolComponentProps) {

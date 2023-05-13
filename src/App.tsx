@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import DrawApp from './components/DrawApp';
-import SettingForm from './components/setting/SettingForm';
+import DrawingApp from './features/drawing/DrawingApp';
+import SettingForm from './features/config/ConfigForm';
 import { useRecoilState } from 'recoil';
-import { configSelector } from './atoms/configState';
+import { configSelector } from './features/config/configState';
 
 function App() {
   const [configState, setConfigState] = useRecoilState(configSelector);
@@ -17,7 +17,7 @@ function App() {
   return (
     <>
       {isInitalized ? (
-        <DrawApp />
+        <DrawingApp />
       ) : (
         <FormPanel>
           <SettingForm initialValue={configState} onSuccess={onSubmitCallback} />

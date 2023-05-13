@@ -1,16 +1,16 @@
 import React from 'react';
 import { css } from '@emotion/core';
 import { InputNumber } from 'antd';
-import { tool } from 'src/atoms/toolState';
+import { toolState } from 'src/features/drawing/tools/toolState';
 import { useRecoilState } from 'recoil';
 
-export function BrashNavigate () {
-  const [toolState, setToolState] = useRecoilState(tool);
+export function BrashNavigation () {
+  const [tool, setTool] = useRecoilState(toolState);
   const onChangeCallback = React.useCallback(
     (value) => {
-      setToolState((prev) => ({ ...prev, lineWidth: value }));
+      setTool((prev) => ({ ...prev, lineWidth: value }));
     },
-    [setToolState],
+    [setTool],
   );
 
   React.useEffect(() => {
@@ -18,7 +18,7 @@ export function BrashNavigate () {
       const code = event.code;
 
       if (code.indexOf('Bracket') > -1) {
-        const value = toolState.lineWidth + (code === 'BracketRight' ? 1 : -1);
+        const value = tool.lineWidth + (code === 'BracketRight' ? 1 : -1);
         if (value > 0 && value < 100) {
           onChangeCallback(value);
         }
@@ -27,7 +27,7 @@ export function BrashNavigate () {
     document.addEventListener('keyup', onKeyup);
 
     return () => document.removeEventListener('keyup', onKeyup);
-  }, [onChangeCallback, toolState.lineWidth]);
+  }, [onChangeCallback, tool.lineWidth]);
 
   return (
     <dl>
@@ -38,7 +38,7 @@ export function BrashNavigate () {
             background-color: transparent;
             color: #fff;
           `}
-          value={toolState.lineWidth}
+          value={tool.lineWidth}
           onChange={onChangeCallback}
         />
       </dd>
